@@ -1222,6 +1222,42 @@ img.profile-avatar {
     margin-bottom: 12px;
 }
 
+/* ===== Settings sections ===== */
+
+.settings-section {
+    margin-top: 32px;
+    padding: 20px;
+    background: var(--blue-pale);
+    border-radius: var(--radius-lg);
+}
+
+.settings-section .form-label {
+    margin-bottom: 10px;
+}
+
+.tg-notify-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.tg-connected {
+    color: var(--green);
+}
+
+.tg-disconnected {
+    color: var(--gray-500);
+}
+
+.settings-section .form-hint {
+    margin-top: 8px;
+}
+
+.settings-section .btn {
+    margin-top: 12px;
+}
+
 /* ===== Empty state ===== */
 
 .empty-state {

@@ -63,5 +63,24 @@
 
         <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
     </form>
+
+    <div class="settings-section">
+        <h2 class="form-label">Уведомления в Telegram</h2>
+        {{if .User.TgChatID}}
+        <div class="tg-notify-status tg-connected">
+            <i data-lucide="check-circle" class="icon-sm"></i>
+            <span>Уведомления подключены</span>
+        </div>
+        {{else}}
+        <div class="tg-notify-status tg-disconnected">
+            <i data-lucide="bell-off" class="icon-sm"></i>
+            <span>Уведомления не подключены</span>
+        </div>
+        <p class="form-hint">Напиши /start боту, чтобы получать уведомления о новых откликах</p>
+        <a href="https://t.me/{{.BotUsername}}" target="_blank" class="btn btn-secondary">
+            @{{.BotUsername}}
+        </a>
+        {{end}}
+    </div>
 </div>
 {{end}}
