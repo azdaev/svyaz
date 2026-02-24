@@ -37,13 +37,21 @@
 
         <div class="form-group">
             <label class="form-label">Ищем в команду</label>
-            <div class="checkbox-grid">
+            <div class="role-grid">
                 {{range .Roles}}
-                <label class="checkbox-card">
-                    <input type="checkbox" name="roles" value="{{.ID}}"
-                        {{if $.IsEdit}}{{if hasRole $.ProjectRoles .ID}}checked{{end}}{{end}}>
-                    <span class="checkbox-label badge badge-{{.Slug}}">{{.Name}}</span>
-                </label>
+                {{$checked := false}}{{if $.IsEdit}}{{if hasRole $.ProjectRoles .ID}}{{$checked = true}}{{end}}{{end}}
+                <div class="role-card {{if $checked}}active{{end}} role-card-{{.Slug}}" onclick="toggleRole(this)">
+                    <input type="checkbox" name="roles" value="{{.ID}}" {{if $checked}}checked{{end}}>
+                    <span class="role-card-name">{{.Name}}</span>
+                    <div class="role-stepper">
+                        <button type="button" class="stepper-btn" onclick="event.stopPropagation(); stepCount(this, -1)">-</button>
+                        <input type="number" name="role_count_{{.ID}}" min="1"
+                               value="{{if $checked}}{{roleCount $.RoleCountMap .ID}}{{else}}1{{end}}"
+                               class="role-count-input"
+                               onclick="event.stopPropagation();">
+                        <button type="button" class="stepper-btn" onclick="event.stopPropagation(); stepCount(this, 1)">+</button>
+                    </div>
+                </div>
                 {{end}}
             </div>
         </div>

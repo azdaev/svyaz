@@ -590,15 +590,15 @@ a:visited { color: inherit; }
 /* ===== Forms ===== */
 
 .form-page {
-    max-width: 640px;
+    max-width: 720px;
     margin: 0 auto;
 }
 
 .form-title {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--gray-900);
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     letter-spacing: -0.02em;
 }
 
@@ -609,13 +609,13 @@ a:visited { color: inherit; }
     margin-bottom: 24px;
 }
 
-.form-group { margin-bottom: 20px; }
+.form-group { margin-bottom: 24px; }
 
 .form-label {
     display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--gray-800);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-500);
     margin-bottom: 6px;
 }
 
@@ -649,9 +649,130 @@ a:visited { color: inherit; }
     margin-top: 4px;
 }
 
+/* Role select grid with stepper */
+
+.role-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.role-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    cursor: pointer;
+    transition: opacity var(--transition), border-color var(--transition), box-shadow var(--transition);
+    opacity: 0.6;
+}
+
+.role-card > input[type="checkbox"] { display: none; }
+
+.role-card.active {
+    opacity: 1;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+}
+
+.role-card-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Role badge colors on cards */
+.role-card-frontend        { background: #DBEAFE; } .role-card-frontend .role-card-name { color: #1D4ED8; }
+.role-card-backend         { background: #D1FAE5; } .role-card-backend .role-card-name { color: #065F46; }
+.role-card-fullstack       { background: #EDE9FE; } .role-card-fullstack .role-card-name { color: #5B21B6; }
+.role-card-project-manager { background: #FEF3C7; } .role-card-project-manager .role-card-name { color: #92400E; }
+.role-card-product-manager { background: #FEE2E2; } .role-card-product-manager .role-card-name { color: #991B1B; }
+.role-card-ux-ui-designer  { background: #FCE7F3; } .role-card-ux-ui-designer .role-card-name { color: #9D174D; }
+.role-card-analyst         { background: #CFFAFE; } .role-card-analyst .role-card-name { color: #155E75; }
+.role-card-logo-designer   { background: #FFEDD5; } .role-card-logo-designer .role-card-name { color: #9A3412; }
+.role-card-qa              { background: #E0E7FF; } .role-card-qa .role-card-name { color: #3730A3; }
+.role-card-devops          { background: #CCFBF1; } .role-card-devops .role-card-name { color: #115E59; }
+
+.role-stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    visibility: hidden;
+}
+
+.role-card.active .role-stepper { visibility: visible; }
+
+.stepper-btn {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    background: var(--white);
+    font-family: var(--font);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gray-500);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    transition: all var(--transition);
+}
+
+.stepper-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+input[type="number"].role-count-input {
+    display: inline-block;
+    width: 16px;
+    min-width: 16px;
+    max-width: 16px;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    background-color: transparent;
+    font-family: var(--font);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--gray-800);
+    outline: none;
+    box-shadow: none;
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.role-count-input::-webkit-inner-spin-button,
+.role-count-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Badge count multiplier */
+
+.badge-count {
+    opacity: 0.7;
+    font-weight: 500;
+    margin-left: 1px;
+}
+
 .checkbox-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 8px;
 }
 
@@ -660,7 +781,7 @@ a:visited { color: inherit; }
     cursor: pointer;
 }
 
-.checkbox-card input { display: none; }
+.checkbox-card > input[type="checkbox"] { display: none; }
 
 .checkbox-card .checkbox-label {
     display: block;
@@ -1106,10 +1227,12 @@ a:visited { color: inherit; }
 
     .radio-group { flex-direction: column; }
     .checkbox-grid { grid-template-columns: 1fr 1fr; }
+    .role-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
     .checkbox-grid { grid-template-columns: 1fr; }
+    .role-grid { grid-template-columns: 1fr; }
     .filters { gap: 4px; }
     .filter-pill { padding: 4px 10px; font-size: 0.7rem; }
 }

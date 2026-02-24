@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Role Count Variants</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    --white: #FFFFFF;
+    --bg: #F7F8FA;
+    --blue: #5B9BD5;
+    --blue-light: #7EC8E3;
+    --blue-pale: #E8F4FD;
+    --gray-900: #1A1A2E;
+    --gray-800: #2D2D3F;
+    --gray-700: #3A3A4F;
+    --gray-500: #6B7280;
+    --gray-400: #9CA3AF;
+    --gray-300: #D1D5DB;
+    --gray-200: #E5E7EB;
+    --gray-100: #F3F4F6;
+    --font: 'JetBrains Mono', monospace;
+    --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--gray-800); padding: 32px; }
+h1 { font-size: 1.3rem; margin-bottom: 32px; color: var(--gray-900); }
+
+.variants { display: flex; flex-direction: column; gap: 40px; max-width: 720px; margin: 0 auto; }
+
+.variant {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.variant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+}
+
+.variant-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--white);
+    background: var(--gray-500);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.variant-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 10px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+/* Base badge */
+.badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+.badge-frontend { background: #DBEAFE; color: #1D4ED8; }
+.badge-backend  { background: #D1FAE5; color: #065F46; }
+.badge-designer { background: #FCE7F3; color: #9D174D; }
+
+/* ===== VARIANT 1: Stepper (- N +) ===== */
+.v1-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+}
+
+.v1-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v1-label { font-size: 0.7rem; font-weight: 600; }
+.v1-label.frontend { color: #1D4ED8; }
+.v1-label.backend { color: #065F46; }
+.v1-label.designer { color: #9D174D; }
+
+.v1-stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.v1-stepper button {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    background: var(--white);
+    font-family: var(--font);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gray-500);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.v1-stepper span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 16px;
+    text-align: center;
+    color: var(--gray-800);
+}
+
+.v1-card.inactive .v1-stepper { display: none; }
+
+/* ===== VARIANT 2: Badge + tiny circle counter ===== */
+.v2-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    text-align: center;
+    justify-content: center;
+    position: relative;
+}
+
+.v2-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v2-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-size: 0.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.v2-card.inactive .v2-count { display: none; }
+
+/* ===== VARIANT 3: Split button (badge | count) ===== */
+.v3-card {
+    display: flex;
+    align-items: stretch;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    overflow: hidden;
+}
+
+.v3-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v3-label {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.v3-count {
+    padding: 8px 10px;
+    border-left: 1px solid rgba(0,0,0,0.1);
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.03);
+    color: var(--gray-800);
+    min-width: 32px;
+    justify-content: center;
+}
+
+.v3-card.inactive .v3-count { display: none; }
+
+/* ===== VARIANT 4: Inline "x2" text ===== */
+.v4-card {
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.v4-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v4-mult {
+    font-weight: 400;
+    opacity: 0.6;
+    margin-left: 2px;
+}
+
+/* ===== VARIANT 5: Bottom row counter ===== */
+.v5-card {
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    overflow: hidden;
+}
+
+.v5-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v5-label {
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.v5-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.03);
+    border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.v5-bottom button {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: var(--gray-200);
+    font-family: var(--font);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--gray-600);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.v5-bottom span {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.v5-card.inactive .v5-bottom { display: none; }
+
+/* ===== VARIANT 6: Right-aligned number input ===== */
+.v6-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 6px 6px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+}
+
+.v6-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v6-label { font-size: 0.7rem; font-weight: 600; }
+
+.v6-input {
+    width: 36px;
+    height: 28px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-family: var(--font);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--gray-800);
+    background: var(--gray-100);
+    outline: none;
+    -moz-appearance: textfield;
+}
+
+.v6-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.v6-card.inactive .v6-input { display: none; }
+
+/* ===== VARIANT 7: Pill with count dot ===== */
+.v7-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    text-align: center;
+    justify-content: center;
+}
+
+.v7-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v7-label { font-size: 0.7rem; font-weight: 600; }
+
+.v7-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.08);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.v7-card.inactive .v7-dot { display: none; }
+
+/* ===== VARIANT 8: Tag style with x-count suffix ===== */
+.v8-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.v8-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+}
+
+.v8-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v8-label {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.v8-count {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(0,0,0,0.06);
+    color: var(--gray-700);
+    border-left: 1px solid rgba(0,0,0,0.08);
+}
+
+.v8-card.inactive .v8-count { display: none; }
+
+/* ===== VARIANT 9: Compact grid with number below ===== */
+.v9-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+}
+
+.v9-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v9-label { font-size: 0.7rem; font-weight: 600; text-align: center; }
+
+.v9-input {
+    width: 48px;
+    height: 24px;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    font-family: var(--font);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--gray-800);
+    background: var(--gray-100);
+    outline: none;
+    -moz-appearance: textfield;
+}
+
+.v9-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.v9-card.inactive .v9-input { display: none; }
+
+/* ===== VARIANT 10: Minimal — just the number in badge ===== */
+.v10-card {
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    position: relative;
+}
+
+.v10-card.inactive {
+    border-color: var(--gray-200);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.v10-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    padding: 0 5px;
+    height: 16px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.08);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--gray-700);
+    vertical-align: middle;
+}
+
+.v10-card.inactive .v10-count { display: none; }
+</style>
+</head>
+<body>
+
+<h1>Role Count UI Variants</h1>
+
+<div class="variants">
+
+<!-- VARIANT 1 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">1</span>
+        <span class="variant-name">Stepper (- N +)</span>
+    </div>
+    <div class="grid">
+        <div class="v1-card" style="background:#DBEAFE;">
+            <span class="v1-label frontend">Frontend</span>
+            <div class="v1-stepper"><button>-</button><span>2</span><button>+</button></div>
+        </div>
+        <div class="v1-card" style="background:#D1FAE5;">
+            <span class="v1-label backend">Backend</span>
+            <div class="v1-stepper"><button>-</button><span>3</span><button>+</button></div>
+        </div>
+        <div class="v1-card inactive" style="background:#FCE7F3;">
+            <span class="v1-label designer">UX/UI</span>
+            <div class="v1-stepper"><button>-</button><span>1</span><button>+</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- VARIANT 2 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">2</span>
+        <span class="variant-name">Floating circle counter</span>
+    </div>
+    <div class="grid">
+        <div class="v2-card" style="background:#DBEAFE;"><span class="badge-frontend" style="background:none;">Frontend</span><span class="v2-count">2</span></div>
+        <div class="v2-card" style="background:#D1FAE5;"><span class="badge-backend" style="background:none;">Backend</span><span class="v2-count">3</span></div>
+        <div class="v2-card inactive" style="background:#FCE7F3;"><span class="badge-designer" style="background:none;">UX/UI</span><span class="v2-count">1</span></div>
+    </div>
+</div>
+
+<!-- VARIANT 3 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">3</span>
+        <span class="variant-name">Split button (label | count)</span>
+    </div>
+    <div class="grid">
+        <div class="v3-card"><div class="v3-label" style="background:#DBEAFE; color:#1D4ED8;">Frontend</div><div class="v3-count">2</div></div>
+        <div class="v3-card"><div class="v3-label" style="background:#D1FAE5; color:#065F46;">Backend</div><div class="v3-count">3</div></div>
+        <div class="v3-card inactive"><div class="v3-label" style="background:#FCE7F3; color:#9D174D;">UX/UI</div><div class="v3-count">1</div></div>
+    </div>
+</div>
+
+<!-- VARIANT 4 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">4</span>
+        <span class="variant-name">Inline "x2" text only</span>
+    </div>
+    <div class="grid">
+        <div class="v4-card" style="background:#DBEAFE; color:#1D4ED8;">Frontend<span class="v4-mult">x2</span></div>
+        <div class="v4-card" style="background:#D1FAE5; color:#065F46;">Backend<span class="v4-mult">x3</span></div>
+        <div class="v4-card inactive" style="background:#FCE7F3; color:#9D174D;">UX/UI</div>
+    </div>
+</div>
+
+<!-- VARIANT 5 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">5</span>
+        <span class="variant-name">Bottom stepper row</span>
+    </div>
+    <div class="grid">
+        <div class="v5-card"><div class="v5-label" style="background:#DBEAFE; color:#1D4ED8;">Frontend</div><div class="v5-bottom"><button>-</button><span>2</span><button>+</button></div></div>
+        <div class="v5-card"><div class="v5-label" style="background:#D1FAE5; color:#065F46;">Backend</div><div class="v5-bottom"><button>-</button><span>3</span><button>+</button></div></div>
+        <div class="v5-card inactive"><div class="v5-label" style="background:#FCE7F3; color:#9D174D;">UX/UI</div><div class="v5-bottom"><button>-</button><span>1</span><button>+</button></div></div>
+    </div>
+</div>
+
+<!-- VARIANT 6 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">6</span>
+        <span class="variant-name">Right-aligned input box</span>
+    </div>
+    <div class="grid">
+        <div class="v6-card" style="background:#DBEAFE;"><span class="v6-label" style="color:#1D4ED8;">Frontend</span><input class="v6-input" type="number" value="2" min="1"></div>
+        <div class="v6-card" style="background:#D1FAE5;"><span class="v6-label" style="color:#065F46;">Backend</span><input class="v6-input" type="number" value="3" min="1"></div>
+        <div class="v6-card inactive" style="background:#FCE7F3;"><span class="v6-label" style="color:#9D174D;">UX/UI</span><input class="v6-input" type="number" value="1" min="1"></div>
+    </div>
+</div>
+
+<!-- VARIANT 7 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">7</span>
+        <span class="variant-name">Pill with count dot</span>
+    </div>
+    <div class="grid">
+        <div class="v7-card" style="background:#DBEAFE;"><span class="v7-label" style="color:#1D4ED8;">Frontend</span><span class="v7-dot">2</span></div>
+        <div class="v7-card" style="background:#D1FAE5;"><span class="v7-label" style="color:#065F46;">Backend</span><span class="v7-dot">3</span></div>
+        <div class="v7-card inactive" style="background:#FCE7F3;"><span class="v7-label" style="color:#9D174D;">UX/UI</span><span class="v7-dot">1</span></div>
+    </div>
+</div>
+
+<!-- VARIANT 8 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">8</span>
+        <span class="variant-name">Tag with count segment</span>
+    </div>
+    <div class="v8-row">
+        <div class="v8-card"><div class="v8-label" style="background:#DBEAFE; color:#1D4ED8;">Frontend</div><div class="v8-count">2</div></div>
+        <div class="v8-card"><div class="v8-label" style="background:#D1FAE5; color:#065F46;">Backend</div><div class="v8-count">3</div></div>
+        <div class="v8-card inactive"><div class="v8-label" style="background:#FCE7F3; color:#9D174D;">UX/UI</div><div class="v8-count">1</div></div>
+    </div>
+</div>
+
+<!-- VARIANT 9 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">9</span>
+        <span class="variant-name">Stacked: badge + pill input below</span>
+    </div>
+    <div class="grid">
+        <div class="v9-card" style="background:#DBEAFE;"><span class="v9-label" style="color:#1D4ED8;">Frontend</span><input class="v9-input" type="number" value="2" min="1"></div>
+        <div class="v9-card" style="background:#D1FAE5;"><span class="v9-label" style="color:#065F46;">Backend</span><input class="v9-input" type="number" value="3" min="1"></div>
+        <div class="v9-card inactive" style="background:#FCE7F3;"><span class="v9-label" style="color:#9D174D;">UX/UI</span><input class="v9-input" type="number" value="1" min="1"></div>
+    </div>
+</div>
+
+<!-- VARIANT 10 -->
+<div class="variant">
+    <div class="variant-header">
+        <span class="variant-num">10</span>
+        <span class="variant-name">Inline count pill</span>
+    </div>
+    <div class="grid">
+        <div class="v10-card" style="background:#DBEAFE; color:#1D4ED8;">Frontend<span class="v10-count">2</span></div>
+        <div class="v10-card" style="background:#D1FAE5; color:#065F46;">Backend<span class="v10-count">3</span></div>
+        <div class="v10-card inactive" style="background:#FCE7F3; color:#9D174D;">UX/UI</div>
+    </div>
+</div>
+
+</div>
+</body>
+</html>

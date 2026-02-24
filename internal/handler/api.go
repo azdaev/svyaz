@@ -29,9 +29,9 @@ func (h *Handler) handleCreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	stack := parseTags(r.FormValue("stack"))
-	roleIDs := parseIntSlice(r.Form["roles"])
+	roleCounts := parseRoleCounts(r)
 
-	projectID, err := h.repo.CreateProject(r.Context(), user.ID, title, description, stack, roleIDs)
+	projectID, err := h.repo.CreateProject(r.Context(), user.ID, title, description, stack, roleCounts)
 	if err != nil {
 		log.Printf("create project: %v", err)
 		http.Error(w, "Internal error", http.StatusInternalServerError)
@@ -68,9 +68,9 @@ func (h *Handler) handleUpdateProject(w http.ResponseWriter, r *http.Request) {
 	title := strings.TrimSpace(r.FormValue("title"))
 	description := strings.TrimSpace(r.FormValue("description"))
 	stack := parseTags(r.FormValue("stack"))
-	roleIDs := parseIntSlice(r.Form["roles"])
+	roleCounts := parseRoleCounts(r)
 
-	if err := h.repo.UpdateProject(r.Context(), id, title, description, stack, roleIDs); err != nil {
+	if err := h.repo.UpdateProject(r.Context(), id, title, description, stack, roleCounts); err != nil {
 		log.Printf("update project: %v", err)
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return
@@ -266,4 +266,22 @@ func parseIntSlice(ss []string) []int64 {
 		}
 	}
 	return ids
+}
+
+func parseRoleCounts(r *http.Request) map[int64]int {
+	rc := make(map[int64]int)
+	for _, s := range r.Form["roles"] {
+		id, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			continue
+		}
+		count := 1
+		if v := r.FormValue(fmt.Sprintf("role_count_%d", id)); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n >= 1 {
+				count = n
+			}
+		}
+		rc[id] = count
+	}
+	return rc
 }

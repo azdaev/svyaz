@@ -15,7 +15,7 @@ type ProjectFilter struct {
 	Offset   int
 }
 
-func (r *Repo) CreateProject(ctx context.Context, authorID int64, title, description string, stack []string, roleIDs []int64) (int64, error) {
+func (r *Repo) CreateProject(ctx context.Context, authorID int64, title, description string, stack []string, roleCounts map[int64]int) (int64, error) {
 	stackJSON, _ := json.Marshal(stack)
 
 	res, err := r.db.ExecContext(ctx,
@@ -27,8 +27,11 @@ func (r *Repo) CreateProject(ctx context.Context, authorID int64, title, descrip
 	}
 	projectID, _ := res.LastInsertId()
 
-	for _, rid := range roleIDs {
-		_, err = r.db.ExecContext(ctx, `INSERT INTO project_roles (project_id, role_id) VALUES (?, ?)`, projectID, rid)
+	for rid, count := range roleCounts {
+		if count < 1 {
+			count = 1
+		}
+		_, err = r.db.ExecContext(ctx, `INSERT INTO project_roles (project_id, role_id, count) VALUES (?, ?, ?)`, projectID, rid, count)
 		if err != nil {
 			return 0, fmt.Errorf("insert project role: %w", err)
 		}
@@ -63,7 +66,7 @@ func (r *Repo) GetProject(ctx context.Context, id int64) (*models.Project, error
 	return p, nil
 }
 
-func (r *Repo) UpdateProject(ctx context.Context, id int64, title, description string, stack []string, roleIDs []int64) error {
+func (r *Repo) UpdateProject(ctx context.Context, id int64, title, description string, stack []string, roleCounts map[int64]int) error {
 	stackJSON, _ := json.Marshal(stack)
 
 	_, err := r.db.ExecContext(ctx,
@@ -79,8 +82,11 @@ func (r *Repo) UpdateProject(ctx context.Context, id int64, title, description s
 		return fmt.Errorf("clear project roles: %w", err)
 	}
 
-	for _, rid := range roleIDs {
-		_, err = r.db.ExecContext(ctx, `INSERT INTO project_roles (project_id, role_id) VALUES (?, ?)`, id, rid)
+	for rid, count := range roleCounts {
+		if count < 1 {
+			count = 1
+		}
+		_, err = r.db.ExecContext(ctx, `INSERT INTO project_roles (project_id, role_id, count) VALUES (?, ?, ?)`, id, rid, count)
 		if err != nil {
 			return fmt.Errorf("insert project role: %w", err)
 		}
@@ -183,7 +189,7 @@ func (r *Repo) ListUserProjects(ctx context.Context, userID int64) ([]models.Pro
 
 func (r *Repo) getProjectRoles(ctx context.Context, projectID int64) ([]models.Role, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT r.id, r.slug, r.name FROM roles r
+		`SELECT r.id, r.slug, r.name, pr.count FROM roles r
 		 JOIN project_roles pr ON pr.role_id = r.id
 		 WHERE pr.project_id = ?`, projectID,
 	)
@@ -195,7 +201,7 @@ func (r *Repo) getProjectRoles(ctx context.Context, projectID int64) ([]models.R
 	var roles []models.Role
 	for rows.Next() {
 		var role models.Role
-		if err := rows.Scan(&role.ID, &role.Slug, &role.Name); err != nil {
+		if err := rows.Scan(&role.ID, &role.Slug, &role.Name, &role.Count); err != nil {
 			return nil, err
 		}
 		roles = append(roles, role)

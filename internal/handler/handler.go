@@ -161,6 +161,12 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, page string, da
 			}
 			return string(runes[start:end])
 		},
+		"roleCount": func(m map[int64]int, id int64) int {
+			if c, ok := m[id]; ok {
+				return c
+			}
+			return 1
+		},
 	}
 
 	if data == nil {

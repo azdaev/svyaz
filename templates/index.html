@@ -41,7 +41,7 @@
         <div class="card-roles">
             <i data-lucide="users" class="icon-sm"></i>
             {{range .Roles}}
-            <span class="badge badge-{{.Slug}}">{{.Name}}</span>
+            <span class="badge badge-{{.Slug}}">{{.Name}}{{if gt .Count 1}} <span class="badge-count">x{{.Count}}</span>{{end}}</span>
             {{end}}
         </div>
         {{end}}

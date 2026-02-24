@@ -95,12 +95,17 @@ func (h *Handler) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 
 	roles, _ := h.repo.GetAllRoles(r.Context())
 	roleIDs := extractRoleIDs(project.Roles)
+	roleCountMap := make(map[int64]int)
+	for _, role := range project.Roles {
+		roleCountMap[role.ID] = role.Count
+	}
 
 	h.render(w, r, "project_form.html", map[string]any{
-		"Roles":        roles,
-		"IsEdit":       true,
-		"Project":      project,
-		"ProjectRoles": roleIDs,
+		"Roles":         roles,
+		"IsEdit":        true,
+		"Project":       project,
+		"ProjectRoles":  roleIDs,
+		"RoleCountMap":  roleCountMap,
 	})
 }
 

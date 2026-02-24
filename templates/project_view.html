@@ -56,7 +56,7 @@
         <h3 class="section-label"><i data-lucide="users" class="icon-sm"></i> Ищем в команду</h3>
         <div class="tag-list">
             {{range .Project.Roles}}
-            <span class="badge badge-{{.Slug}} badge-lg">{{.Name}}</span>
+            <span class="badge badge-{{.Slug}} badge-lg">{{.Name}}{{if gt .Count 1}} <span class="badge-count">x{{.Count}}</span>{{end}}</span>
             {{end}}
         </div>
     </div>

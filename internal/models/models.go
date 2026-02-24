@@ -3,9 +3,10 @@ package models
 import "time"
 
 type Role struct {
-	ID   int64
-	Slug string
-	Name string
+	ID    int64
+	Slug  string
+	Name  string
+	Count int
 }
 
 type User struct {

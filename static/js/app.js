@@ -92,3 +92,23 @@ function markNotificationsRead(e) {
         document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
     });
 }
+
+function toggleRole(card) {
+    const cb = card.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    card.classList.toggle('active', cb.checked);
+    const countInput = card.querySelector('.role-count-input');
+    if (countInput) {
+        if (cb.checked && (!countInput.value || countInput.value === '0')) {
+            countInput.value = '1';
+        }
+    }
+}
+
+function stepCount(btn, delta) {
+    const input = btn.parentElement.querySelector('.role-count-input');
+    if (!input) return;
+    const val = parseInt(input.value, 10) || 1;
+    const next = val + delta;
+    if (next >= 1) input.value = next;
+}
