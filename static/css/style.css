@@ -937,6 +937,28 @@ input[type="number"].role-count-input {
     font-weight: 500;
 }
 
+.responded-notice--rejected {
+    background: var(--red-pale);
+    color: #991B1B;
+}
+
+.responded-hint {
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.cancel-response-form {
+    margin-top: 10px;
+}
+
+.respond-hint {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    margin-top: 8px;
+}
+
 /* Responses */
 
 .responses-section {
@@ -999,7 +1021,8 @@ input[type="number"].role-count-input {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    flex-wrap: wrap;
 }
 
 .tg-link {
@@ -1017,7 +1040,7 @@ input[type="number"].role-count-input {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 .inline-form { display: inline; }
