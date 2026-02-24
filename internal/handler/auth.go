@@ -50,6 +50,18 @@ func (h *Handler) handleTelegramAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	secure := r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
+
+	// Clear old host-only cookie (no Domain) to avoid conflicts with new domain cookie
+	if h.cookieDomain != "" {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session",
+			Value:    "",
+			Path:     "/",
+			HttpOnly: true,
+			MaxAge:   -1,
+		})
+	}
+
 	cookie := &http.Cookie{
 		Name:     "session",
 		Value:    token,
@@ -77,17 +89,25 @@ func (h *Handler) handleLogout(w http.ResponseWriter, r *http.Request) {
 		_ = h.repo.DeleteSession(r.Context(), cookie.Value)
 	}
 
-	logoutCookie := &http.Cookie{
+	// Clear host-only cookie (no Domain)
+	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
 		MaxAge:   -1,
-	}
+	})
+	// Clear domain cookie
 	if h.cookieDomain != "" {
-		logoutCookie.Domain = h.cookieDomain
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session",
+			Value:    "",
+			Path:     "/",
+			Domain:   h.cookieDomain,
+			HttpOnly: true,
+			MaxAge:   -1,
+		})
 	}
-	http.SetCookie(w, logoutCookie)
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
