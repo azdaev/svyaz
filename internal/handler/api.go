@@ -144,6 +144,12 @@ func (h *Handler) handleRespond(w http.ResponseWriter, r *http.Request) {
 		"user_id":       user.ID,
 	})
 
+	if h.tgClient != nil && project.Author != nil && project.Author.TgChatID > 0 {
+		link := fmt.Sprintf("https://svyaz.fitra.tech/project/%d", project.ID)
+		text := fmt.Sprintf("Новый отклик от <b>%s</b> на \"%s\"\n%s", user.Name, project.Title, link)
+		go h.tgClient.SendMessage(project.Author.TgChatID, text)
+	}
+
 	http.Redirect(w, r, fmt.Sprintf("/project/%d", id), http.StatusFound)
 }
 
@@ -219,6 +225,15 @@ func (h *Handler) handleUpdateResponse(w http.ResponseWriter, r *http.Request) {
 			"project_id":    project.ID,
 			"project_title": project.Title,
 		})
+
+		if h.tgClient != nil {
+			respUser, err := h.repo.GetUser(r.Context(), resp.UserID)
+			if err == nil && respUser.TgChatID > 0 {
+				link := fmt.Sprintf("https://svyaz.fitra.tech/project/%d", project.ID)
+				text := fmt.Sprintf("Ваш отклик на \"%s\" принят!\n%s", project.Title, link)
+				go h.tgClient.SendMessage(respUser.TgChatID, text)
+			}
+		}
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/project/%d", project.ID), http.StatusFound)

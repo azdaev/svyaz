@@ -65,5 +65,12 @@
 
         <button type="submit" class="btn btn-primary btn-lg">Начать</button>
     </form>
+
+    <div class="tg-notify-hint">
+        <p>Чтобы получать уведомления в Telegram, напиши /start боту:</p>
+        <a href="https://t.me/{{.BotUsername}}" target="_blank" class="btn btn-secondary">
+            @{{.BotUsername}}
+        </a>
+    </div>
 </div>
 {{end}}

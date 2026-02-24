@@ -30,7 +30,7 @@
             <tr>
                 <td>
                     <div class="admin-user-cell">
-                        <span class="user-avatar" style="width:28px;height:28px;font-size:0.65rem;">{{slice .Name 0 1}}</span>
+                        {{if .PhotoURL}}<img src="{{.PhotoURL}}" alt="" class="user-avatar" style="width:28px;height:28px;">{{else}}<span class="user-avatar" style="width:28px;height:28px;font-size:0.65rem;">{{slice .Name 0 1}}</span>{{end}}
                         <span>{{.Name}}</span>
                     </div>
                 </td>
