@@ -306,8 +306,6 @@ button.dropdown-item { justify-content: start; font-weight: normal; }
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--gray-200);
 }
 
 .filter-pill {
