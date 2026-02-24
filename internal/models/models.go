@@ -1,0 +1,54 @@
+package models
+
+import "time"
+
+type Role struct {
+	ID   int64
+	Slug string
+	Name string
+}
+
+type User struct {
+	ID         int64
+	TgID       int64
+	TgUsername string
+	Name       string
+	Bio        string
+	Experience string
+	Skills     []string
+	Onboarded  bool
+	Roles      []Role
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}
+
+type Project struct {
+	ID          int64
+	AuthorID    int64
+	Title       string
+	Description string
+	Stack       []string
+	Roles       []Role
+	Author      *User
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type Response struct {
+	ID        int64
+	ProjectID int64
+	UserID    int64
+	Status    string
+	User      *User
+	Project   *Project
+	CreatedAt time.Time
+}
+
+type Notification struct {
+	ID        int64
+	UserID    int64
+	Type      string
+	Payload   map[string]interface{}
+	Read      bool
+	CreatedAt time.Time
+}

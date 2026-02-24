@@ -1,0 +1,69 @@
+{{define "title"}} — Добро пожаловать{{end}}
+
+{{define "content"}}
+<div class="form-page onboarding-page">
+    <div class="onboarding-header">
+        <h1 class="form-title">Добро пожаловать в Svyaz</h1>
+        <p class="form-subtitle">Расскажи о себе, чтобы находить подходящие проекты</p>
+    </div>
+
+    <form action="/api/user/onboarding" method="POST" class="onboarding-form">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+        <div class="form-group">
+            <label for="name" class="form-label">Имя<span class="req">*</span></label>
+            <input type="text" id="name" name="name" required
+                   value="{{.User.Name}}"
+                   class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Роли<span class="req">*</span></label>
+            <p class="form-hint">Выбери одну или несколько</p>
+            <div class="checkbox-grid">
+                {{range .Roles}}
+                <label class="checkbox-card">
+                    <input type="checkbox" name="roles" value="{{.ID}}">
+                    <span class="checkbox-label badge badge-{{.Slug}}">{{.Name}}</span>
+                </label>
+                {{end}}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Опыт</label>
+            <div class="radio-group">
+                <label class="radio-card">
+                    <input type="radio" name="experience" value="junior">
+                    <span class="radio-label">Junior</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="experience" value="middle">
+                    <span class="radio-label">Middle</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="experience" value="senior">
+                    <span class="radio-label">Senior</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="skills" class="form-label">Навыки и стек</label>
+            <input type="text" id="skills" name="skills"
+                   placeholder="Go, React, Figma, SQL..."
+                   class="form-input">
+            <span class="form-hint">Через запятую</span>
+        </div>
+
+        <div class="form-group">
+            <label for="bio" class="form-label">О себе</label>
+            <textarea id="bio" name="bio" rows="3" maxlength="500"
+                      placeholder="Пару слов о себе и своём опыте..."
+                      class="form-input"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Начать</button>
+    </form>
+</div>
+{{end}}

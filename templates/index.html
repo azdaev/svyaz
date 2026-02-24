@@ -1,0 +1,70 @@
+{{define "title"}} — Найди команду{{end}}
+
+{{define "content"}}
+<div class="filters">
+    <a href="/" class="filter-pill {{if not .FilterRole}}active{{end}}">Все</a>
+    {{range .Roles}}
+    <a href="/?role={{.Slug}}" class="filter-pill {{if eq $.FilterRole .Slug}}active{{end}}">{{.Name}}</a>
+    {{end}}
+</div>
+
+{{if .FilterStack}}
+<div class="active-filters">
+    <span class="active-filter">
+        стек: {{.FilterStack}}
+        <a href="/?role={{.FilterRole}}" class="filter-remove"><i data-lucide="x" class="icon-sm"></i></a>
+    </span>
+</div>
+{{end}}
+
+{{if .Projects}}
+<div class="projects-grid">
+    {{range .Projects}}
+    <a href="/project/{{.ID}}" class="project-card">
+        <div class="card-header">
+            <h3 class="card-title">{{.Title}}</h3>
+            <span class="card-date">{{formatDate .CreatedAt}}</span>
+        </div>
+
+        <p class="card-desc">{{truncate .Description 160}}</p>
+
+        {{if .Stack}}
+        <div class="card-tags">
+            <i data-lucide="wrench" class="icon-sm"></i>
+            {{range .Stack}}
+            <span class="tag tag-stack">{{.}}</span>
+            {{end}}
+        </div>
+        {{end}}
+
+        {{if .Roles}}
+        <div class="card-roles">
+            <i data-lucide="users" class="icon-sm"></i>
+            {{range .Roles}}
+            <span class="badge badge-{{.Slug}}">{{.Name}}</span>
+            {{end}}
+        </div>
+        {{end}}
+
+        <div class="card-author">
+            <span class="author-avatar">{{slice .Author.Name 0 1}}</span>
+            <span class="author-name">{{.Author.Name}}</span>
+        </div>
+    </a>
+    {{end}}
+</div>
+{{else}}
+<div class="empty-state">
+    <i data-lucide="search" class="empty-icon"></i>
+    {{if or .FilterRole .FilterStack}}
+    <p>Ничего не найдено</p>
+    <a href="/" class="btn btn-secondary">Сбросить фильтры</a>
+    {{else}}
+    <p>Проектов пока нет</p>
+    {{if .User}}
+    <a href="/project/new" class="btn btn-secondary">Создать первый проект</a>
+    {{end}}
+    {{end}}
+</div>
+{{end}}
+{{end}}

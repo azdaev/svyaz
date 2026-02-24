@@ -1,0 +1,135 @@
+{{define "title"}} — {{.Project.Title}}{{end}}
+
+{{define "content"}}
+<div class="project-page">
+    <a href="/" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Назад</a>
+
+    <div class="project-header">
+        <h1 class="project-title">{{.Project.Title}}</h1>
+        {{if .IsAuthor}}
+        <div class="project-actions">
+            <a href="/project/{{.Project.ID}}/edit" class="btn btn-secondary btn-sm">
+                <i data-lucide="edit" class="icon-sm"></i> Редактировать
+            </a>
+            <form action="/api/projects/{{.Project.ID}}/delete" method="POST" onsubmit="return confirm('Удалить проект?')">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i data-lucide="trash" class="icon-sm"></i> Удалить
+                </button>
+            </form>
+        </div>
+        {{end}}
+    </div>
+
+    <div class="project-meta">
+        <span class="meta-item">
+            <i data-lucide="calendar" class="icon-sm"></i> {{formatDate .Project.CreatedAt}}
+        </span>
+        <a href="/user/{{.Project.Author.ID}}" class="meta-item meta-author">
+            <span class="author-avatar-sm">{{slice .Project.Author.Name 0 1}}</span>
+            {{.Project.Author.Name}}
+        </a>
+        {{if .Project.Author.TgUsername}}
+        <a href="https://t.me/{{.Project.Author.TgUsername}}" target="_blank" class="meta-item meta-tg">
+            <i data-lucide="at-sign" class="icon-sm"></i> {{.Project.Author.TgUsername}}
+        </a>
+        {{end}}
+    </div>
+
+    <div class="project-body">
+        <p>{{.Project.Description}}</p>
+    </div>
+
+    {{if .Project.Stack}}
+    <div class="project-section">
+        <h3 class="section-label"><i data-lucide="code" class="icon-sm"></i> Стек</h3>
+        <div class="tag-list">
+            {{range .Project.Stack}}
+            <a href="/?stack={{.}}" class="tag tag-stack">{{.}}</a>
+            {{end}}
+        </div>
+    </div>
+    {{end}}
+
+    {{if .Project.Roles}}
+    <div class="project-section">
+        <h3 class="section-label"><i data-lucide="users" class="icon-sm"></i> Ищем в команду</h3>
+        <div class="tag-list">
+            {{range .Project.Roles}}
+            <span class="badge badge-{{.Slug}} badge-lg">{{.Name}}</span>
+            {{end}}
+        </div>
+    </div>
+    {{end}}
+
+    {{if .User}}
+        {{if not .IsAuthor}}
+        <div class="respond-section">
+            {{if .HasResponded}}
+            <div class="responded-notice">
+                <i data-lucide="check-circle" class="icon"></i>
+                Вы уже откликнулись на этот проект
+            </div>
+            {{else}}
+            <form action="/api/projects/{{.Project.ID}}/respond" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i data-lucide="send" class="icon-sm"></i> Откликнуться
+                </button>
+            </form>
+            {{end}}
+        </div>
+        {{end}}
+    {{end}}
+
+    {{if .Responses}}
+    <div class="responses-section">
+        <h3 class="section-label"><i data-lucide="inbox" class="icon-sm"></i> Отклики ({{len .Responses}})</h3>
+        <div class="responses-list">
+            {{range .Responses}}
+            <div class="response-card response-{{.Status}}">
+                <a href="/user/{{.User.ID}}" class="response-user">
+                    <span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>
+                    <div class="response-user-info">
+                        <div class="response-name">{{.User.Name}}</div>
+                        <div class="response-details">
+                            {{range .User.Roles}}
+                            <span class="badge badge-{{.Slug}} badge-sm">{{.Name}}</span>
+                            {{end}}
+                            {{if .User.Experience}}<span class="response-exp">{{.User.Experience}}</span>{{end}}
+                        </div>
+                    </div>
+                </a>
+                <div class="response-right">
+                    {{if .User.TgUsername}}
+                    <a href="https://t.me/{{.User.TgUsername}}" target="_blank" class="tg-link">
+                        <i data-lucide="at-sign" class="icon-sm"></i> {{.User.TgUsername}}
+                    </a>
+                    {{end}}
+                    <div class="response-actions">
+                        <span class="status-badge status-{{.Status}}">{{statusText .Status}}</span>
+                        {{if eq .Status "pending"}}
+                        <form action="/api/responses/{{.ID}}" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <input type="hidden" name="status" value="accepted">
+                            <button type="submit" class="btn btn-accept btn-sm">
+                                <i data-lucide="check" class="icon-sm"></i> Принять
+                            </button>
+                        </form>
+                        <form action="/api/responses/{{.ID}}" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <input type="hidden" name="status" value="rejected">
+                            <button type="submit" class="btn btn-reject btn-sm">
+                                <i data-lucide="x" class="icon-sm"></i> Отклонить
+                            </button>
+                        </form>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+    {{end}}
+</div>
+{{end}}

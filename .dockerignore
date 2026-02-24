@@ -1,0 +1,8 @@
+*.db
+*.db-wal
+*.db-shm
+.env
+.git
+screenshots/
+brief-*.html
+*.md

@@ -1,0 +1,37 @@
+{{define "title"}} — Мои проекты{{end}}
+
+{{define "content"}}
+<div class="my-page">
+    <div class="my-header">
+        <h1 class="form-title">Мои проекты</h1>
+        <a href="/project/new" class="btn btn-secondary btn-sm">
+            <i data-lucide="plus" class="icon-sm"></i> Новый проект
+        </a>
+    </div>
+
+    {{if .Items}}
+    <div class="my-list">
+        {{range .Items}}
+        <a href="/project/{{.Project.ID}}" class="my-card">
+            <div class="my-card-top">
+                <h3 class="my-card-title">{{.Project.Title}}</h3>
+                <span class="card-date">{{formatDate .Project.CreatedAt}}</span>
+            </div>
+            <p class="my-card-desc">{{truncate .Project.Description 120}}</p>
+            {{if .ResponseCount}}
+            <span class="response-count">
+                <i data-lucide="inbox" class="icon-sm"></i> {{plural .ResponseCount "отклик" "отклика" "откликов"}}
+            </span>
+            {{end}}
+        </a>
+        {{end}}
+    </div>
+    {{else}}
+    <div class="empty-state">
+        <i data-lucide="folder-plus" class="empty-icon"></i>
+        <p>У вас пока нет проектов</p>
+        <a href="/project/new" class="btn btn-secondary">Создать проект</a>
+    </div>
+    {{end}}
+</div>
+{{end}}

@@ -1,0 +1,87 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svyaz{{block "title" .}}{{end}}</title>
+    <link rel="stylesheet" href="/static/css/hiq.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    {{if .User}}
+    <meta name="csrf-token" content="{{.CSRFToken}}">
+    {{end}}
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo">svyaz<span class="logo-dot">_</span></a>
+
+            <nav class="nav">
+                {{if .User}}
+                <a href="/project/new" class="nav-link nav-link--create">
+                    <i data-lucide="plus" class="icon"></i>
+                    <span>Создать</span>
+                </a>
+                <a href="/my/projects" class="nav-link">
+                    <i data-lucide="folder" class="icon"></i>
+                    <span>Мои проекты</span>
+                </a>
+                <a href="/my/responses" class="nav-link">
+                    <i data-lucide="send" class="icon"></i>
+                    <span>Отклики</span>
+                </a>
+
+                <div class="notif-wrap">
+                    <button class="nav-link notif-btn" onclick="toggleNotifications()">
+                        <i data-lucide="bell" class="icon"></i>
+                        {{if .NotifCount}}<span class="notif-badge">{{.NotifCount}}</span>{{end}}
+                    </button>
+                    <div class="notif-dropdown" id="notifDropdown"></div>
+                </div>
+
+                <div class="user-menu-wrap">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">
+                        <span class="user-avatar">{{slice .User.Name 0 1}}</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">{{.User.Name}}</div>
+                        <a href="/user/{{.User.ID}}" class="dropdown-item">
+                            <i data-lucide="user" class="icon"></i> Профиль
+                        </a>
+                        <a href="/settings" class="dropdown-item">
+                            <i data-lucide="settings" class="icon"></i> Настройки
+                        </a>
+                        <form action="/auth/logout" method="POST" class="dropdown-item-form">
+                            <button type="submit" class="dropdown-item dropdown-item--danger">
+                                <i data-lucide="log-out" class="icon"></i> Выйти
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {{else}}
+                <div id="tg-login">
+                    <script async src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="{{.BotUsername}}"
+                        data-size="medium"
+                        data-radius="8"
+                        data-auth-url="/auth/telegram"
+                        data-request-access="write">
+                    </script>
+                </div>
+                {{end}}
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        {{block "content" .}}{{end}}
+    </main>
+
+    <script src="/static/js/app.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
+{{end}}

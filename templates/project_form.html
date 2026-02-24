@@ -1,0 +1,56 @@
+{{define "title"}}{{if .IsEdit}} — Редактировать{{else}} — Новый проект{{end}}{{end}}
+
+{{define "content"}}
+<div class="form-page">
+    <a href="{{if .IsEdit}}/project/{{.Project.ID}}{{else}}/{{end}}" class="back-link">
+        <i data-lucide="arrow-left" class="icon-sm"></i> Назад
+    </a>
+
+    <h1 class="form-title">{{if .IsEdit}}Редактировать проект{{else}}Новый проект{{end}}</h1>
+
+    <form action="{{if .IsEdit}}/api/projects/{{.Project.ID}}{{else}}/api/projects{{end}}" method="POST" class="project-form">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+        <div class="form-group">
+            <label for="title" class="form-label">Название<span class="req">*</span></label>
+            <input type="text" id="title" name="title" required maxlength="100"
+                   placeholder="Например: Трекер привычек"
+                   value="{{if .IsEdit}}{{.Project.Title}}{{end}}"
+                   class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="form-label">Описание</label>
+            <textarea id="description" name="description" rows="6" maxlength="2000"
+                      placeholder="Расскажите о проекте: что делаете, какая идея, на каком этапе..."
+                      class="form-input">{{if .IsEdit}}{{.Project.Description}}{{end}}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="stack" class="form-label">Стек технологий</label>
+            <input type="text" id="stack" name="stack"
+                   placeholder="Go, React, PostgreSQL..."
+                   value="{{if .IsEdit}}{{join .Project.Stack ", "}}{{end}}"
+                   class="form-input">
+            <span class="form-hint">Через запятую</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Ищем в команду</label>
+            <div class="checkbox-grid">
+                {{range .Roles}}
+                <label class="checkbox-card">
+                    <input type="checkbox" name="roles" value="{{.ID}}"
+                        {{if $.IsEdit}}{{if hasRole $.ProjectRoles .ID}}checked{{end}}{{end}}>
+                    <span class="checkbox-label badge badge-{{.Slug}}">{{.Name}}</span>
+                </label>
+                {{end}}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">
+            {{if .IsEdit}}Сохранить{{else}}Создать проект{{end}}
+        </button>
+    </form>
+</div>
+{{end}}

@@ -1,0 +1,30 @@
+{{define "title"}} — Мои отклики{{end}}
+
+{{define "content"}}
+<div class="my-page">
+    <h1 class="form-title">Мои отклики</h1>
+
+    {{if .Responses}}
+    <div class="my-list">
+        {{range .Responses}}
+        <a href="/project/{{.Project.ID}}" class="my-card">
+            <div class="my-card-main">
+                <h3 class="my-card-title">{{.Project.Title}}</h3>
+                <p class="my-card-desc">{{truncate .Project.Description 120}}</p>
+            </div>
+            <div class="my-card-meta">
+                <span class="status-badge status-{{.Status}}">{{statusText .Status}}</span>
+                <span class="card-date">{{formatDate .CreatedAt}}</span>
+            </div>
+        </a>
+        {{end}}
+    </div>
+    {{else}}
+    <div class="empty-state">
+        <i data-lucide="send" class="empty-icon"></i>
+        <p>Вы ещё не откликались на проекты</p>
+        <a href="/" class="btn btn-secondary">Смотреть проекты</a>
+    </div>
+    {{end}}
+</div>
+{{end}}

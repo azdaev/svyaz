@@ -1,0 +1,55 @@
+{{define "title"}} — {{.Profile.Name}}{{end}}
+
+{{define "content"}}
+<div class="profile-page">
+    <a href="/" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Назад</a>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">{{slice .Profile.Name 0 1}}</div>
+            <div class="profile-info">
+                <h1 class="profile-name">{{.Profile.Name}}</h1>
+                {{if .Profile.Experience}}
+                <span class="profile-exp">{{.Profile.Experience}}</span>
+                {{end}}
+                {{if .Profile.TgUsername}}
+                <a href="https://t.me/{{.Profile.TgUsername}}" target="_blank" class="profile-tg">
+                    <i data-lucide="at-sign" class="icon-sm"></i> {{.Profile.TgUsername}}
+                </a>
+                {{end}}
+            </div>
+            {{if .User}}{{if eq .User.ID .Profile.ID}}
+            <a href="/settings" class="btn btn-secondary btn-sm">
+                <i data-lucide="edit" class="icon-sm"></i> Редактировать
+            </a>
+            {{end}}{{end}}
+        </div>
+
+        {{if .Profile.Bio}}
+        <p class="profile-bio">{{.Profile.Bio}}</p>
+        {{end}}
+
+        {{if .Profile.Roles}}
+        <div class="profile-section">
+            <h3 class="section-label"><i data-lucide="users" class="icon-sm"></i> Роли</h3>
+            <div class="tag-list">
+                {{range .Profile.Roles}}
+                <span class="badge badge-{{.Slug}} badge-lg">{{.Name}}</span>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+
+        {{if .Profile.Skills}}
+        <div class="profile-section">
+            <h3 class="section-label"><i data-lucide="wrench" class="icon-sm"></i> Навыки</h3>
+            <div class="tag-list">
+                {{range .Profile.Skills}}
+                <span class="tag tag-stack">{{.}}</span>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}

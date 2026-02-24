@@ -1,0 +1,67 @@
+{{define "title"}} — Настройки{{end}}
+
+{{define "content"}}
+<div class="form-page">
+    <a href="/user/{{.User.ID}}" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Профиль</a>
+
+    <h1 class="form-title">Настройки профиля</h1>
+
+    <form action="/api/user/profile" method="POST" class="onboarding-form">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+        <div class="form-group">
+            <label for="name" class="form-label">Имя</label>
+            <input type="text" id="name" name="name" required
+                   value="{{.User.Name}}"
+                   class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Роли</label>
+            <div class="checkbox-grid">
+                {{range .Roles}}
+                <label class="checkbox-card">
+                    <input type="checkbox" name="roles" value="{{.ID}}"
+                        {{if hasRole $.UserRoles .ID}}checked{{end}}>
+                    <span class="checkbox-label badge badge-{{.Slug}}">{{.Name}}</span>
+                </label>
+                {{end}}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Опыт</label>
+            <div class="radio-group">
+                <label class="radio-card">
+                    <input type="radio" name="experience" value="junior" {{if eq .User.Experience "junior"}}checked{{end}}>
+                    <span class="radio-label">Junior</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="experience" value="middle" {{if eq .User.Experience "middle"}}checked{{end}}>
+                    <span class="radio-label">Middle</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="experience" value="senior" {{if eq .User.Experience "senior"}}checked{{end}}>
+                    <span class="radio-label">Senior</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="skills" class="form-label">Навыки и стек</label>
+            <input type="text" id="skills" name="skills"
+                   value="{{join .User.Skills ", "}}"
+                   class="form-input">
+            <span class="form-hint">Через запятую</span>
+        </div>
+
+        <div class="form-group">
+            <label for="bio" class="form-label">О себе</label>
+            <textarea id="bio" name="bio" rows="3" maxlength="500"
+                      class="form-input">{{.User.Bio}}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
+    </form>
+</div>
+{{end}}

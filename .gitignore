@@ -1,0 +1,13 @@
+*.db
+*.db-wal
+*.db-shm
+.env
+node_modules/
+bin/
+brief-*.html
+screenshots/
+server
+.playwright-mcp/
+package.json
+package-lock.json
+SPEC.md
