@@ -10,6 +10,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    {{block "og_meta" .}}
+    <meta property="og:title" content="Svyaz — найди команду">
+    <meta property="og:description" content="Платформа для поиска команды и единомышленников для совместных проектов">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Svyaz">
+    {{end}}
     {{if .User}}
     <meta name="csrf-token" content="{{.CSRFToken}}">
     {{end}}

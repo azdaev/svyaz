@@ -67,6 +67,7 @@ func (h *Handler) mainRouter() chi.Router {
 	r.Get("/", h.handleIndex)
 	r.Get("/project/new", h.requireAuth(h.handleProjectNew))
 	r.Get("/project/{id}", h.handleProjectView)
+	r.Get("/project/{id}/og.png", h.handleOGImage)
 	r.Get("/project/{id}/edit", h.requireAuth(h.handleProjectEdit))
 	r.Get("/user/{id}", h.handleUserProfile)
 	r.Get("/onboarding", h.requireAuth(h.handleOnboarding))
@@ -86,6 +87,7 @@ func (h *Handler) mainRouter() chi.Router {
 		r.Post("/projects/{id}", h.requireAuth(h.handleUpdateProject))
 		r.Post("/projects/{id}/delete", h.requireAuth(h.handleDeleteProject))
 		r.Post("/projects/{id}/respond", h.requireAuth(h.handleRespond))
+		r.Post("/projects/{id}/cancel-response", h.requireAuth(h.handleCancelResponse))
 		r.Post("/responses/{id}", h.requireAuth(h.handleUpdateResponse))
 		r.Post("/user/onboarding", h.requireAuth(h.handleSaveOnboarding))
 		r.Post("/user/profile", h.requireAuth(h.handleSaveProfile))
@@ -212,6 +214,14 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, page string, da
 				}
 			}
 			return false
+		},
+		"ogClean": func(s string, n int) string {
+			s = strings.ReplaceAll(s, "\n", " ")
+			runes := []rune(s)
+			if len(runes) > n {
+				return string(runes[:n]) + "..."
+			}
+			return s
 		},
 		"slice": func(s string, start, end int) string {
 			runes := []rune(s)
