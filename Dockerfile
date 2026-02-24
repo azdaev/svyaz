@@ -1,12 +1,12 @@
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /build
 
 COPY go.mod go.sum ./
-RUN GOTOOLCHAIN=auto go mod download
+RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOTOOLCHAIN=auto go build -o svyaz ./cmd/server
+RUN CGO_ENABLED=0 go build -o svyaz ./cmd/server
 
 FROM alpine:3.20
 
