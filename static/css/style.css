@@ -496,6 +496,9 @@ button.dropdown-item { justify-content: start; font-weight: normal; }
 .badge-logo-designer   { background: #FFEDD5; color: #9A3412; }
 .badge-qa              { background: #E0E7FF; color: #3730A3; }
 .badge-devops          { background: #CCFBF1; color: #115E59; }
+.badge-ios             { background: #F3E8FF; color: #6B21A8; }
+.badge-android         { background: #DCFCE7; color: #166534; }
+.badge-flutter         { background: #E0F2FE; color: #075985; }
 
 /* Status badges */
 .status-badge {
@@ -695,6 +698,9 @@ button.dropdown-item { justify-content: start; font-weight: normal; }
 .role-card-logo-designer   { background: #FFEDD5; } .role-card-logo-designer .role-card-name { color: #9A3412; }
 .role-card-qa              { background: #E0E7FF; } .role-card-qa .role-card-name { color: #3730A3; }
 .role-card-devops          { background: #CCFBF1; } .role-card-devops .role-card-name { color: #115E59; }
+.role-card-ios             { background: #F3E8FF; } .role-card-ios .role-card-name { color: #6B21A8; }
+.role-card-android         { background: #DCFCE7; } .role-card-android .role-card-name { color: #166534; }
+.role-card-flutter         { background: #E0F2FE; } .role-card-flutter .role-card-name { color: #075985; }
 
 .role-stepper {
     display: flex;
