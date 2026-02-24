@@ -1,0 +1,60 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svyaz Admin{{block "title" .}}{{end}}</title>
+    <link rel="stylesheet" href="/static/css/hiq.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    {{if .User}}
+    <meta name="csrf-token" content="{{.CSRFToken}}">
+    {{end}}
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="/" class="admin-logo">svyaz<span class="logo-dot">_</span> <span class="admin-label">admin</span></a>
+
+            <nav class="admin-nav">
+                <a href="/" class="admin-nav-item">
+                    <i data-lucide="bar-chart-2" class="icon"></i>
+                    <span>Дашборд</span>
+                </a>
+                <a href="/users" class="admin-nav-item">
+                    <i data-lucide="users" class="icon"></i>
+                    <span>Пользователи</span>
+                </a>
+                <a href="/projects" class="admin-nav-item">
+                    <i data-lucide="folder" class="icon"></i>
+                    <span>Проекты</span>
+                </a>
+            </nav>
+
+            <div class="admin-sidebar-footer">
+                <div class="admin-user">
+                    <span class="user-avatar" style="width:28px;height:28px;font-size:0.7rem;">{{slice .User.Name 0 1}}</span>
+                    <span class="admin-user-name">{{.User.Name}}</span>
+                </div>
+                <form action="/auth/logout" method="POST" style="margin-top:8px;">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <button type="submit" class="admin-logout-btn">
+                        <i data-lucide="log-out" class="icon-sm"></i> Выйти
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            {{block "content" .}}{{end}}
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,81 @@
+{{define "title"}} — Пользователи{{end}}
+
+{{define "content"}}
+<h1 class="admin-page-title">Пользователи</h1>
+
+<form class="admin-search" method="GET" action="/users">
+    <input type="text" name="search" value="{{.Search}}" placeholder="Поиск по имени или username..." class="form-input admin-search-input">
+    <button type="submit" class="btn btn-secondary btn-sm">
+        <i data-lucide="search" class="icon-sm"></i>
+    </button>
+    {{if .Search}}
+    <a href="/users" class="btn btn-secondary btn-sm">Сбросить</a>
+    {{end}}
+</form>
+
+{{if .Users}}
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Пользователь</th>
+                <th>TG</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Users}}
+            <tr>
+                <td>
+                    <div class="admin-user-cell">
+                        <span class="user-avatar" style="width:28px;height:28px;font-size:0.65rem;">{{slice .Name 0 1}}</span>
+                        <span>{{.Name}}</span>
+                    </div>
+                </td>
+                <td>
+                    {{if .TgUsername}}
+                    <span class="admin-tg">@{{.TgUsername}}</span>
+                    {{else}}
+                    <span class="admin-muted">—</span>
+                    {{end}}
+                </td>
+                <td><span class="admin-date">{{formatDate .CreatedAt}}</span></td>
+                <td>
+                    {{if .IsAdmin}}<span class="admin-badge admin-badge--blue">admin</span>{{end}}
+                    {{if .IsBanned}}<span class="admin-badge admin-badge--red">забанен</span>{{end}}
+                </td>
+                <td>
+                    <div class="admin-actions">
+                        <form action="/api/users/{{.ID}}/toggle-admin" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn btn-secondary btn-sm" title="{{if .IsAdmin}}Снять админа{{else}}Сделать админом{{end}}">
+                                <i data-lucide="shield" class="icon-sm"></i>
+                            </button>
+                        </form>
+                        <form action="/api/users/{{.ID}}/toggle-ban" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn btn-secondary btn-sm" title="{{if .IsBanned}}Разбанить{{else}}Забанить{{end}}">
+                                <i data-lucide="ban" class="icon-sm"></i>
+                            </button>
+                        </form>
+                        <form action="/api/users/{{.ID}}/delete" method="POST" class="inline-form" onsubmit="return confirm('Удалить пользователя?')">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Удалить">
+                                <i data-lucide="trash" class="icon-sm"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{else}}
+<div class="empty-state">
+    <p>Пользователи не найдены</p>
+</div>
+{{end}}
+{{end}}

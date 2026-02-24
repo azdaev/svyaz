@@ -32,7 +32,7 @@ func main() {
 	}
 	log.Printf("Bot: @%s", botUsername)
 
-	h := handler.New(db, "templates", cfg.BotToken, botUsername, cfg.CSRFSecret)
+	h := handler.New(db, "templates", cfg.BotToken, botUsername, cfg.CSRFSecret, cfg.CookieDomain)
 	router := h.Router()
 
 	go func() {

@@ -1,0 +1,9 @@
+-- +goose Up
+ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE users ADD COLUMN is_banned INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE projects ADD COLUMN status TEXT NOT NULL DEFAULT 'active';
+
+-- +goose Down
+ALTER TABLE users DROP COLUMN is_admin;
+ALTER TABLE users DROP COLUMN is_banned;
+ALTER TABLE projects DROP COLUMN status;

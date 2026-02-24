@@ -1,0 +1,40 @@
+{{define "title"}} — Дашборд{{end}}
+
+{{define "content"}}
+<h1 class="admin-page-title">Дашборд</h1>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{.Stats.UserCount}}</div>
+        <div class="stat-label">Пользователей</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{.Stats.ProjectTotal}}</div>
+        <div class="stat-label">Проектов всего</div>
+    </div>
+    <div class="stat-card stat-card--amber">
+        <div class="stat-value">{{.Stats.ProjectPending}}</div>
+        <div class="stat-label">На модерации</div>
+    </div>
+    <div class="stat-card stat-card--green">
+        <div class="stat-value">{{.Stats.ProjectActive}}</div>
+        <div class="stat-label">Активных</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{.Stats.ProjectHidden}}</div>
+        <div class="stat-label">Скрытых</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{.Stats.ResponseCount}}</div>
+        <div class="stat-label">Откликов</div>
+    </div>
+</div>
+
+{{if .Stats.ProjectPending}}
+<div style="margin-top:24px;">
+    <a href="/projects?status=pending" class="btn btn-secondary">
+        <i data-lucide="clock" class="icon-sm"></i> Посмотреть очередь модерации
+    </a>
+</div>
+{{end}}
+{{end}}

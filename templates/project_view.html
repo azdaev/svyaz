@@ -4,6 +4,21 @@
 <div class="project-page">
     <a href="/" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Назад</a>
 
+    {{if .JustCreated}}
+    <div class="moderation-notice">
+        <i data-lucide="clock" class="icon"></i>
+        Проект отправлен на модерацию. Он появится в общей ленте после проверки.
+    </div>
+    {{end}}
+
+    {{if and .IsAuthor (ne .Project.Status "active")}}
+    <div class="moderation-notice moderation-notice--{{.Project.Status}}">
+        <i data-lucide="{{if eq .Project.Status "pending"}}clock{{else}}eye-off{{end}}" class="icon"></i>
+        {{if eq .Project.Status "pending"}}Проект на модерации{{end}}
+        {{if eq .Project.Status "hidden"}}Проект скрыт модератором{{end}}
+    </div>
+    {{end}}
+
     <div class="project-header">
         <h1 class="project-title">{{.Project.Title}}</h1>
         {{if .IsAuthor}}

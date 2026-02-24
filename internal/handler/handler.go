@@ -20,24 +20,39 @@ import (
 )
 
 type Handler struct {
-	repo        *repo.Repo
-	tmplDir     string
-	botToken    string
-	botUsername string
-	csrfSecret  string
+	repo         *repo.Repo
+	tmplDir      string
+	botToken     string
+	botUsername  string
+	csrfSecret   string
+	cookieDomain string
 }
 
-func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret string) *Handler {
+func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain string) *Handler {
 	return &Handler{
-		repo:        r,
-		tmplDir:     tmplDir,
-		botToken:    botToken,
-		botUsername: botUsername,
-		csrfSecret:  csrfSecret,
+		repo:         r,
+		tmplDir:      tmplDir,
+		botToken:     botToken,
+		botUsername:  botUsername,
+		csrfSecret:   csrfSecret,
+		cookieDomain: cookieDomain,
 	}
 }
 
-func (h *Handler) Router() chi.Router {
+func (h *Handler) Router() http.Handler {
+	main := h.mainRouter()
+	admin := h.adminRouter()
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.Host, "admin.") {
+			admin.ServeHTTP(w, r)
+		} else {
+			main.ServeHTTP(w, r)
+		}
+	})
+}
+
+func (h *Handler) mainRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Use(chimw.Logger)
 	r.Use(chimw.Recoverer)
@@ -79,6 +94,53 @@ func (h *Handler) Router() chi.Router {
 	})
 
 	return r
+}
+
+func (h *Handler) adminRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Use(chimw.Logger)
+	r.Use(chimw.Recoverer)
+	r.Use(chimw.CleanPath)
+	r.Use(middleware.Auth(h.repo))
+
+	fs := http.StripPrefix("/static/", http.FileServer(http.Dir("static")))
+	r.Handle("/static/*", fs)
+
+	r.Group(func(r chi.Router) {
+		r.Use(h.requireAdmin)
+
+		r.Get("/", h.handleAdminDashboard)
+		r.Get("/users", h.handleAdminUsers)
+		r.Get("/projects", h.handleAdminProjects)
+		r.Get("/projects/{id}", h.handleAdminProjectView)
+
+		r.Route("/api", func(r chi.Router) {
+			r.Use(h.csrfMiddleware)
+
+			r.Post("/users/{id}/toggle-admin", h.handleAdminToggleAdmin)
+			r.Post("/users/{id}/toggle-ban", h.handleAdminToggleBan)
+			r.Post("/users/{id}/delete", h.handleAdminDeleteUser)
+			r.Post("/projects/{id}/approve", h.handleAdminApproveProject)
+			r.Post("/projects/{id}/hide", h.handleAdminHideProject)
+			r.Post("/projects/{id}/delete", h.handleAdminDeleteProject)
+		})
+	})
+
+	// Auth (accessible without admin check)
+	r.Post("/auth/logout", h.handleLogout)
+
+	return r
+}
+
+func (h *Handler) requireAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := middleware.UserFromContext(r.Context())
+		if user == nil || !user.IsAdmin {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (h *Handler) requireAuth(next http.HandlerFunc) http.HandlerFunc {
@@ -196,6 +258,61 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, page string, da
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := tmpl.ExecuteTemplate(w, "base", data); err != nil {
 		log.Printf("template execute error (%s): %v", page, err)
+	}
+}
+
+func (h *Handler) renderAdmin(w http.ResponseWriter, r *http.Request, page string, data map[string]any) {
+	funcMap := template.FuncMap{
+		"formatDate": func(t time.Time) string {
+			months := []string{
+				"", "янв", "фев", "мар", "апр", "мая", "июн",
+				"июл", "авг", "сен", "окт", "ноя", "дек",
+			}
+			return fmt.Sprintf("%d %s %d", t.Day(), months[t.Month()], t.Year())
+		},
+		"join": strings.Join,
+		"truncate": func(s string, n int) string {
+			runes := []rune(s)
+			if len(runes) <= n {
+				return s
+			}
+			return string(runes[:n]) + "..."
+		},
+		"slice": func(s string, start, end int) string {
+			runes := []rune(s)
+			if start >= len(runes) {
+				return ""
+			}
+			if end > len(runes) {
+				end = len(runes)
+			}
+			return string(runes[start:end])
+		},
+	}
+
+	if data == nil {
+		data = make(map[string]any)
+	}
+
+	user := middleware.UserFromContext(r.Context())
+	data["User"] = user
+	if user != nil {
+		data["CSRFToken"] = h.generateCSRF(r)
+	}
+
+	tmpl, err := template.New("").Funcs(funcMap).ParseFiles(
+		filepath.Join(h.tmplDir, "admin_base.html"),
+		filepath.Join(h.tmplDir, page),
+	)
+	if err != nil {
+		log.Printf("admin template parse error (%s): %v", page, err)
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := tmpl.ExecuteTemplate(w, "base", data); err != nil {
+		log.Printf("admin template execute error (%s): %v", page, err)
 	}
 }
 

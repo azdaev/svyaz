@@ -48,11 +48,24 @@ func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]any{
-		"Project": project,
+	user := middleware.UserFromContext(r.Context())
+
+	// Non-active projects: only visible to author and admins
+	if project.Status != "active" {
+		isAuthor := user != nil && user.ID == project.AuthorID
+		isAdmin := user != nil && user.IsAdmin
+		if !isAuthor && !isAdmin {
+			http.NotFound(w, r)
+			return
+		}
 	}
 
-	if user := middleware.UserFromContext(r.Context()); user != nil {
+	data := map[string]any{
+		"Project":     project,
+		"JustCreated": r.URL.Query().Get("created") == "1",
+	}
+
+	if user != nil {
 		responded, _ := h.repo.HasUserResponded(r.Context(), id, user.ID)
 		data["HasResponded"] = responded
 		data["IsAuthor"] = user.ID == project.AuthorID

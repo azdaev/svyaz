@@ -18,6 +18,8 @@ type User struct {
 	Experience string
 	Skills     []string
 	Onboarded  bool
+	IsAdmin    bool
+	IsBanned   bool
 	Roles      []Role
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
@@ -28,11 +30,21 @@ type Project struct {
 	AuthorID    int64
 	Title       string
 	Description string
+	Status      string
 	Stack       []string
 	Roles       []Role
 	Author      *User
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+}
+
+type AdminStats struct {
+	UserCount       int
+	ProjectTotal    int
+	ProjectPending  int
+	ProjectActive   int
+	ProjectHidden   int
+	ResponseCount   int
 }
 
 type Response struct {

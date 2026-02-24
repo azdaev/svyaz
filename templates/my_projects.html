@@ -14,7 +14,15 @@
         {{range .Items}}
         <a href="/project/{{.Project.ID}}" class="my-card">
             <div class="my-card-top">
-                <h3 class="my-card-title">{{.Project.Title}}</h3>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <h3 class="my-card-title">{{.Project.Title}}</h3>
+                    {{if ne .Project.Status "active"}}
+                    <span class="project-status-badge project-status-{{.Project.Status}}">
+                        {{if eq .Project.Status "pending"}}На модерации{{end}}
+                        {{if eq .Project.Status "hidden"}}Скрыт{{end}}
+                    </span>
+                    {{end}}
+                </div>
                 <span class="card-date">{{formatDate .Project.CreatedAt}}</span>
             </div>
             <p class="my-card-desc">{{truncate .Project.Description 120}}</p>

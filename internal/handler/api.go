@@ -38,7 +38,7 @@ func (h *Handler) handleCreateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/project/%d", projectID), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/project/%d?created=1", projectID), http.StatusFound)
 }
 
 func (h *Handler) handleUpdateProject(w http.ResponseWriter, r *http.Request) {

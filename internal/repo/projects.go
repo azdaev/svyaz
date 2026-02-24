@@ -19,7 +19,7 @@ func (r *Repo) CreateProject(ctx context.Context, authorID int64, title, descrip
 	stackJSON, _ := json.Marshal(stack)
 
 	res, err := r.db.ExecContext(ctx,
-		`INSERT INTO projects (author_id, title, description, stack) VALUES (?, ?, ?, ?)`,
+		`INSERT INTO projects (author_id, title, description, stack, status) VALUES (?, ?, ?, ?, 'pending')`,
 		authorID, title, description, string(stackJSON),
 	)
 	if err != nil {
@@ -44,8 +44,8 @@ func (r *Repo) GetProject(ctx context.Context, id int64) (*models.Project, error
 	p := &models.Project{}
 	var stackJSON string
 	err := r.db.QueryRowContext(ctx,
-		`SELECT id, author_id, title, description, stack, created_at, updated_at FROM projects WHERE id = ?`, id,
-	).Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.CreatedAt, &p.UpdatedAt)
+		`SELECT id, author_id, title, description, stack, status, created_at, updated_at FROM projects WHERE id = ?`, id,
+	).Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.Status, &p.CreatedAt, &p.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("get project: %w", err)
 	}
@@ -101,7 +101,7 @@ func (r *Repo) DeleteProject(ctx context.Context, id int64) error {
 }
 
 func (r *Repo) ListProjects(ctx context.Context, f ProjectFilter) ([]models.Project, error) {
-	query := `SELECT DISTINCT p.id, p.author_id, p.title, p.description, p.stack, p.created_at, p.updated_at FROM projects p`
+	query := `SELECT DISTINCT p.id, p.author_id, p.title, p.description, p.stack, p.status, p.created_at, p.updated_at FROM projects p`
 	var args []interface{}
 	var conditions []string
 
@@ -115,6 +115,8 @@ func (r *Repo) ListProjects(ctx context.Context, f ProjectFilter) ([]models.Proj
 		conditions = append(conditions, `p.stack LIKE ?`)
 		args = append(args, `%"`+f.Stack+`"%`)
 	}
+
+	conditions = append(conditions, `p.status = 'active'`)
 
 	if len(conditions) > 0 {
 		query += ` WHERE ` + strings.Join(conditions, ` AND `)
@@ -137,7 +139,7 @@ func (r *Repo) ListProjects(ctx context.Context, f ProjectFilter) ([]models.Proj
 	for rows.Next() {
 		var p models.Project
 		var stackJSON string
-		if err := rows.Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.Status, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
 		_ = json.Unmarshal([]byte(stackJSON), &p.Stack)
@@ -162,7 +164,7 @@ func (r *Repo) ListProjects(ctx context.Context, f ProjectFilter) ([]models.Proj
 
 func (r *Repo) ListUserProjects(ctx context.Context, userID int64) ([]models.Project, error) {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT id, author_id, title, description, stack, created_at, updated_at
+		`SELECT id, author_id, title, description, stack, status, created_at, updated_at
 		 FROM projects WHERE author_id = ? ORDER BY created_at DESC`, userID,
 	)
 	if err != nil {
@@ -174,7 +176,7 @@ func (r *Repo) ListUserProjects(ctx context.Context, userID int64) ([]models.Pro
 	for rows.Next() {
 		var p models.Project
 		var stackJSON string
-		if err := rows.Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.Status, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
 		_ = json.Unmarshal([]byte(stackJSON), &p.Stack)

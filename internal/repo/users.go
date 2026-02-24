@@ -41,9 +41,9 @@ func (r *Repo) GetUser(ctx context.Context, id int64) (*models.User, error) {
 	u := &models.User{}
 	var skillsJSON string
 	err := r.db.QueryRowContext(ctx,
-		`SELECT id, tg_id, tg_username, name, bio, experience, skills, onboarded, created_at, updated_at
+		`SELECT id, tg_id, tg_username, name, bio, experience, skills, onboarded, is_admin, is_banned, created_at, updated_at
 		 FROM users WHERE id = ?`, id,
-	).Scan(&u.ID, &u.TgID, &u.TgUsername, &u.Name, &u.Bio, &u.Experience, &skillsJSON, &u.Onboarded, &u.CreatedAt, &u.UpdatedAt)
+	).Scan(&u.ID, &u.TgID, &u.TgUsername, &u.Name, &u.Bio, &u.Experience, &skillsJSON, &u.Onboarded, &u.IsAdmin, &u.IsBanned, &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}

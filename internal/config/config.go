@@ -13,6 +13,7 @@ type Config struct {
 	Host         string
 	Port         string
 	CSRFSecret   string
+	CookieDomain string
 }
 
 func Load() (*Config, error) {
@@ -24,6 +25,7 @@ func Load() (*Config, error) {
 		Host:         os.Getenv("HOST"),
 		Port:         os.Getenv("PORT"),
 		CSRFSecret:   os.Getenv("CSRF_SECRET"),
+		CookieDomain: os.Getenv("COOKIE_DOMAIN"),
 	}
 
 	if c.BotToken == "" {

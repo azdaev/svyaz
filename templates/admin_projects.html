@@ -1,0 +1,93 @@
+{{define "title"}} — Проекты{{end}}
+
+{{define "content"}}
+<h1 class="admin-page-title">Проекты</h1>
+
+<div class="admin-toolbar">
+    <div class="admin-status-tabs">
+        <a href="/projects" class="filter-pill {{if not .StatusFilter}}active{{end}}">Все</a>
+        <a href="/projects?status=pending" class="filter-pill {{if eq .StatusFilter "pending"}}active{{end}}">На модерации</a>
+        <a href="/projects?status=active" class="filter-pill {{if eq .StatusFilter "active"}}active{{end}}">Активные</a>
+        <a href="/projects?status=hidden" class="filter-pill {{if eq .StatusFilter "hidden"}}active{{end}}">Скрытые</a>
+    </div>
+
+    <form class="admin-search" method="GET" action="/projects">
+        {{if .StatusFilter}}<input type="hidden" name="status" value="{{.StatusFilter}}">{{end}}
+        <input type="text" name="search" value="{{.Search}}" placeholder="Поиск по названию..." class="form-input admin-search-input">
+        <button type="submit" class="btn btn-secondary btn-sm">
+            <i data-lucide="search" class="icon-sm"></i>
+        </button>
+        {{if .Search}}
+        <a href="/projects{{if .StatusFilter}}?status={{.StatusFilter}}{{end}}" class="btn btn-secondary btn-sm">Сбросить</a>
+        {{end}}
+    </form>
+</div>
+
+{{if .Projects}}
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Проект</th>
+                <th>Автор</th>
+                <th>Статус</th>
+                <th>Дата</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Projects}}
+            <tr>
+                <td>
+                    <a href="/projects/{{.ID}}" class="admin-project-link">{{.Title}}</a>
+                </td>
+                <td>
+                    {{if .Author}}
+                    <span class="admin-muted">{{.Author.Name}}</span>
+                    {{end}}
+                </td>
+                <td>
+                    <span class="project-status-badge project-status-{{.Status}}">
+                        {{if eq .Status "pending"}}На модерации{{end}}
+                        {{if eq .Status "active"}}Активен{{end}}
+                        {{if eq .Status "hidden"}}Скрыт{{end}}
+                    </span>
+                </td>
+                <td><span class="admin-date">{{formatDate .CreatedAt}}</span></td>
+                <td>
+                    <div class="admin-actions">
+                        {{if ne .Status "active"}}
+                        <form action="/api/projects/{{.ID}}/approve" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn btn-accept btn-sm" title="Одобрить">
+                                <i data-lucide="check" class="icon-sm"></i>
+                            </button>
+                        </form>
+                        {{end}}
+                        {{if ne .Status "hidden"}}
+                        <form action="/api/projects/{{.ID}}/hide" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn btn-secondary btn-sm" title="Скрыть">
+                                <i data-lucide="eye-off" class="icon-sm"></i>
+                            </button>
+                        </form>
+                        {{end}}
+                        <form action="/api/projects/{{.ID}}/delete" method="POST" class="inline-form" onsubmit="return confirm('Удалить проект?')">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Удалить">
+                                <i data-lucide="trash" class="icon-sm"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{else}}
+<div class="empty-state">
+    <p>Проекты не найдены</p>
+</div>
+{{end}}
+{{end}}
