@@ -7,7 +7,7 @@
     {{if .Responses}}
     <div class="my-list">
         {{range .Responses}}
-        <a href="/project/{{.Project.ID}}" class="my-card">
+        <a href="/project/{{.Project.Slug}}" class="my-card">
             <div class="my-card-main">
                 <h3 class="my-card-title">{{.Project.Title}}</h3>
                 <p class="my-card-desc">{{truncate .Project.Description 120}}</p>

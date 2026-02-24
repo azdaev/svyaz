@@ -20,7 +20,7 @@
 {{if .Projects}}
 <div class="projects-grid">
     {{range .Projects}}
-    <a href="/project/{{.ID}}" class="project-card">
+    <a href="/project/{{.Slug}}" class="project-card">
         <div class="card-header">
             <h3 class="card-title">{{.Title}}</h3>
             <span class="card-date">{{formatDate .CreatedAt}}</span>

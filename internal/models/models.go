@@ -29,6 +29,7 @@ type User struct {
 
 type Project struct {
 	ID          int64
+	Slug        string
 	AuthorID    int64
 	Title       string
 	Description string

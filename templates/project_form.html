@@ -2,13 +2,13 @@
 
 {{define "content"}}
 <div class="form-page">
-    <a href="{{if .IsEdit}}/project/{{.Project.ID}}{{else}}/{{end}}" class="back-link">
+    <a href="{{if .IsEdit}}/project/{{.Project.Slug}}{{else}}/{{end}}" class="back-link">
         <i data-lucide="arrow-left" class="icon-sm"></i> Назад
     </a>
 
     <h1 class="form-title">{{if .IsEdit}}Редактировать проект{{else}}Новый проект{{end}}</h1>
 
-    <form action="{{if .IsEdit}}/api/projects/{{.Project.ID}}{{else}}/api/projects{{end}}" method="POST" class="project-form">
+    <form action="{{if .IsEdit}}/api/projects/{{.Project.Slug}}{{else}}/api/projects{{end}}" method="POST" class="project-form">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
         <div class="form-group">

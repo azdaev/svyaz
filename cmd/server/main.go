@@ -28,6 +28,10 @@ func main() {
 	}
 	defer db.Close()
 
+	if err := db.BackfillSlugs(context.Background()); err != nil {
+		log.Fatalf("backfill slugs: %v", err)
+	}
+
 	botUsername, err := fetchBotUsername(cfg.BotToken)
 	if err != nil {
 		log.Fatalf("telegram bot: %v", err)

@@ -11,6 +11,20 @@ import (
 	"svyaz/internal/repo"
 )
 
+func (h *Handler) projectBySlug(w http.ResponseWriter, r *http.Request) *models.Project {
+	slug := chi.URLParam(r, "slug")
+	if slug == "" {
+		http.NotFound(w, r)
+		return nil
+	}
+	project, err := h.repo.GetProjectBySlug(r.Context(), slug)
+	if err != nil {
+		http.NotFound(w, r)
+		return nil
+	}
+	return project
+}
+
 func (h *Handler) handleIndex(w http.ResponseWriter, r *http.Request) {
 	roleSlug := r.URL.Query().Get("role")
 	stack := r.URL.Query().Get("stack")
@@ -36,15 +50,8 @@ func (h *Handler) handleIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	project, err := h.repo.GetProject(r.Context(), id)
-	if err != nil {
-		http.NotFound(w, r)
+	project := h.projectBySlug(w, r)
+	if project == nil {
 		return
 	}
 
@@ -69,14 +76,14 @@ func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
 		data["IsAuthor"] = user.ID == project.AuthorID
 
 		if user.ID != project.AuthorID {
-			if resp, err := h.repo.GetUserResponseForProject(r.Context(), id, user.ID); err == nil {
+			if resp, err := h.repo.GetUserResponseForProject(r.Context(), project.ID, user.ID); err == nil {
 				data["HasResponded"] = true
 				data["UserResponseStatus"] = resp.Status
 			}
 		}
 
 		if user.ID == project.AuthorID {
-			responses, _ := h.repo.ListProjectResponses(r.Context(), id)
+			responses, _ := h.repo.ListProjectResponses(r.Context(), project.ID)
 			data["Responses"] = responses
 		}
 	}
@@ -93,15 +100,8 @@ func (h *Handler) handleProjectNew(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	project, err := h.repo.GetProject(r.Context(), id)
-	if err != nil {
-		http.NotFound(w, r)
+	project := h.projectBySlug(w, r)
+	if project == nil {
 		return
 	}
 

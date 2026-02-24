@@ -8,11 +8,9 @@ import (
 	"image/png"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 
-	"github.com/go-chi/chi/v5"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
@@ -110,13 +108,11 @@ func getOGFonts() (*ogFonts, error) {
 }
 
 func (h *Handler) handleOGImage(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		http.NotFound(w, r)
+	project := h.projectBySlug(w, r)
+	if project == nil {
 		return
 	}
-	project, err := h.repo.GetProject(r.Context(), id)
-	if err != nil || project.Status != "active" {
+	if project.Status != "active" {
 		http.NotFound(w, r)
 		return
 	}

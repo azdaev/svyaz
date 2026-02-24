@@ -44,7 +44,7 @@ func (r *Repo) AdminListUsers(ctx context.Context, search string, limit, offset 
 }
 
 func (r *Repo) AdminListProjects(ctx context.Context, search, statusFilter string, limit, offset int) ([]models.Project, error) {
-	query := `SELECT p.id, p.author_id, p.title, p.description, p.stack, p.status, p.created_at, p.updated_at FROM projects p`
+	query := `SELECT p.id, p.slug, p.author_id, p.title, p.description, p.stack, p.status, p.created_at, p.updated_at FROM projects p`
 	var args []interface{}
 	var conditions []string
 
@@ -79,7 +79,7 @@ func (r *Repo) AdminListProjects(ctx context.Context, search, statusFilter strin
 	for rows.Next() {
 		var p models.Project
 		var stackJSON string
-		if err := rows.Scan(&p.ID, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.Status, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.Slug, &p.AuthorID, &p.Title, &p.Description, &stackJSON, &p.Status, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
 		_ = json.Unmarshal([]byte(stackJSON), &p.Stack)

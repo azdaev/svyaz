@@ -57,10 +57,10 @@ function loadNotifications() {
 
             if (n.Type === 'new_response') {
                 text = `Новый отклик от <strong>${p.user_name || 'Кто-то'}</strong> на «${p.project_title || 'проект'}»`;
-                link = '/project/' + (p.project_id || '');
+                link = '/project/' + (p.project_slug || p.project_id || '');
             } else if (n.Type === 'response_accepted') {
                 text = `Ваш отклик на «${p.project_title || 'проект'}» принят`;
-                link = '/project/' + (p.project_id || '');
+                link = '/project/' + (p.project_slug || p.project_id || '');
             }
 
             return `<a href="${link}" class="notif-item ${n.Read ? '' : 'unread'}">${text}</a>`;

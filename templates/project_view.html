@@ -4,8 +4,8 @@
 <meta property="og:title" content="{{.Project.Title}} — Svyaz">
 <meta property="og:description" content="{{ogClean .Project.Description 200}}">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://svyaz.fitra.tech/project/{{.Project.ID}}">
-<meta property="og:image" content="https://svyaz.fitra.tech/project/{{.Project.ID}}/og.png">
+<meta property="og:url" content="https://svyaz.fitra.tech/project/{{.Project.Slug}}">
+<meta property="og:image" content="https://svyaz.fitra.tech/project/{{.Project.Slug}}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Svyaz">
@@ -35,10 +35,10 @@
         <h1 class="project-title">{{.Project.Title}}</h1>
         {{if .IsAuthor}}
         <div class="project-actions">
-            <a href="/project/{{.Project.ID}}/edit" class="btn btn-secondary btn-sm">
+            <a href="/project/{{.Project.Slug}}/edit" class="btn btn-secondary btn-sm">
                 <i data-lucide="edit" class="icon-sm"></i> Редактировать
             </a>
-            <form action="/api/projects/{{.Project.ID}}/delete" method="POST" onsubmit="return confirm('Удалить проект?')">
+            <form action="/api/projects/{{.Project.Slug}}/delete" method="POST" onsubmit="return confirm('Удалить проект?')">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <button type="submit" class="btn btn-danger btn-sm">
                     <i data-lucide="trash" class="icon-sm"></i> Удалить
@@ -101,7 +101,7 @@
                         <div class="responded-hint">Если автор примет отклик, он свяжется с вами в Telegram</div>
                     </div>
                 </div>
-                <form action="/api/projects/{{.Project.ID}}/cancel-response" method="POST" class="cancel-response-form">
+                <form action="/api/projects/{{.Project.Slug}}/cancel-response" method="POST" class="cancel-response-form">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <button type="submit" class="btn btn-secondary btn-sm">
                         <i data-lucide="x" class="icon-sm"></i> Отменить отклик
@@ -119,7 +119,7 @@
                 </div>
                 {{end}}
             {{else}}
-            <form action="/api/projects/{{.Project.ID}}/respond" method="POST">
+            <form action="/api/projects/{{.Project.Slug}}/respond" method="POST">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <button type="submit" class="btn btn-primary btn-lg">
                     <i data-lucide="send" class="icon-sm"></i> Откликнуться
