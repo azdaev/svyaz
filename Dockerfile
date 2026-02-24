@@ -19,6 +19,9 @@ COPY --from=builder /build/templates ./templates
 COPY --from=builder /build/static ./static
 COPY --from=builder /build/migrations ./migrations
 
+RUN mkdir -p /data
+
+VOLUME /data
 EXPOSE 3000
 
 CMD ["./svyaz"]
