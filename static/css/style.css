@@ -272,6 +272,7 @@ a:visited { color: inherit; }
 .dropdown-item--danger:hover { color: var(--red); }
 
 .dropdown-item-form { display: contents; }
+button.dropdown-item { justify-content: start; font-weight: normal; }
 
 /* ===== Main ===== */
 
