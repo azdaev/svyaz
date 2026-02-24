@@ -8,13 +8,13 @@ import (
 	"svyaz/internal/models"
 )
 
-func (r *Repo) UpsertUser(ctx context.Context, tgID int64, tgUsername, name string) (user *models.User, isNew bool, err error) {
+func (r *Repo) UpsertUser(ctx context.Context, tgID int64, tgUsername, name, photoURL string) (user *models.User, isNew bool, err error) {
 	var id int64
 	err = r.db.QueryRowContext(ctx, `SELECT id FROM users WHERE tg_id = ?`, tgID).Scan(&id)
 	if err == sql.ErrNoRows {
 		res, err := r.db.ExecContext(ctx,
-			`INSERT INTO users (tg_id, tg_username, name) VALUES (?, ?, ?)`,
-			tgID, tgUsername, name,
+			`INSERT INTO users (tg_id, tg_username, name, photo_url) VALUES (?, ?, ?, ?)`,
+			tgID, tgUsername, name, photoURL,
 		)
 		if err != nil {
 			return nil, false, fmt.Errorf("insert user: %w", err)
@@ -25,8 +25,8 @@ func (r *Repo) UpsertUser(ctx context.Context, tgID int64, tgUsername, name stri
 		return nil, false, fmt.Errorf("query user: %w", err)
 	} else {
 		_, err = r.db.ExecContext(ctx,
-			`UPDATE users SET tg_username = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-			tgUsername, id,
+			`UPDATE users SET tg_username = ?, photo_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+			tgUsername, photoURL, id,
 		)
 		if err != nil {
 			return nil, false, fmt.Errorf("update user: %w", err)
@@ -41,9 +41,9 @@ func (r *Repo) GetUser(ctx context.Context, id int64) (*models.User, error) {
 	u := &models.User{}
 	var skillsJSON string
 	err := r.db.QueryRowContext(ctx,
-		`SELECT id, tg_id, tg_username, name, bio, experience, skills, onboarded, is_admin, is_banned, created_at, updated_at
+		`SELECT id, tg_id, tg_username, name, bio, experience, skills, photo_url, tg_chat_id, onboarded, is_admin, is_banned, created_at, updated_at
 		 FROM users WHERE id = ?`, id,
-	).Scan(&u.ID, &u.TgID, &u.TgUsername, &u.Name, &u.Bio, &u.Experience, &skillsJSON, &u.Onboarded, &u.IsAdmin, &u.IsBanned, &u.CreatedAt, &u.UpdatedAt)
+	).Scan(&u.ID, &u.TgID, &u.TgUsername, &u.Name, &u.Bio, &u.Experience, &skillsJSON, &u.PhotoURL, &u.TgChatID, &u.Onboarded, &u.IsAdmin, &u.IsBanned, &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}
@@ -112,6 +112,14 @@ func (r *Repo) getUserRoles(ctx context.Context, userID int64) ([]models.Role, e
 		roles = append(roles, role)
 	}
 	return roles, nil
+}
+
+func (r *Repo) SetTgChatID(ctx context.Context, userID, chatID int64) error {
+	_, err := r.db.ExecContext(ctx,
+		`UPDATE users SET tg_chat_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		chatID, userID,
+	)
+	return err
 }
 
 func (r *Repo) GetAllRoles(ctx context.Context) ([]models.Role, error) {

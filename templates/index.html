@@ -47,7 +47,7 @@
         {{end}}
 
         <div class="card-author">
-            <span class="author-avatar">{{slice .Author.Name 0 1}}</span>
+            {{if .Author.PhotoURL}}<img src="{{.Author.PhotoURL}}" alt="" class="author-avatar">{{else}}<span class="author-avatar">{{slice .Author.Name 0 1}}</span>{{end}}
             <span class="author-name">{{.Author.Name}}</span>
         </div>
     </a>

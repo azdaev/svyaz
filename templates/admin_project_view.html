@@ -80,7 +80,7 @@
         {{range .Responses}}
         <div class="response-card">
             <div class="response-user">
-                <span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>
+                {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>{{end}}
                 <div class="response-user-info">
                     <div class="response-name">{{.User.Name}}</div>
                     {{if .User.TgUsername}}

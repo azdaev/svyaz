@@ -44,7 +44,7 @@
 
                 <div class="user-menu-wrap">
                     <button class="user-menu-btn" onclick="toggleUserMenu()">
-                        <span class="user-avatar">{{slice .User.Name 0 1}}</span>
+                        {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="user-avatar">{{else}}<span class="user-avatar">{{slice .User.Name 0 1}}</span>{{end}}
                     </button>
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">{{.User.Name}}</div>

@@ -8,7 +8,7 @@ import (
 )
 
 func (r *Repo) AdminListUsers(ctx context.Context, search string, limit, offset int) ([]models.User, error) {
-	query := `SELECT id, tg_id, tg_username, name, bio, experience, skills, onboarded, is_admin, is_banned, created_at, updated_at FROM users`
+	query := `SELECT id, tg_id, tg_username, name, bio, experience, skills, photo_url, tg_chat_id, onboarded, is_admin, is_banned, created_at, updated_at FROM users`
 	var args []interface{}
 
 	if search != "" {
@@ -34,7 +34,7 @@ func (r *Repo) AdminListUsers(ctx context.Context, search string, limit, offset 
 	for rows.Next() {
 		var u models.User
 		var skillsJSON string
-		if err := rows.Scan(&u.ID, &u.TgID, &u.TgUsername, &u.Name, &u.Bio, &u.Experience, &skillsJSON, &u.Onboarded, &u.IsAdmin, &u.IsBanned, &u.CreatedAt, &u.UpdatedAt); err != nil {
+		if err := rows.Scan(&u.ID, &u.TgID, &u.TgUsername, &u.Name, &u.Bio, &u.Experience, &skillsJSON, &u.PhotoURL, &u.TgChatID, &u.Onboarded, &u.IsAdmin, &u.IsBanned, &u.CreatedAt, &u.UpdatedAt); err != nil {
 			return nil, err
 		}
 		_ = json.Unmarshal([]byte(skillsJSON), &u.Skills)

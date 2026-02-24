@@ -17,6 +17,8 @@ type User struct {
 	Bio        string
 	Experience string
 	Skills     []string
+	PhotoURL   string
+	TgChatID   int64
 	Onboarded  bool
 	IsAdmin    bool
 	IsBanned   bool

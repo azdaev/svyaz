@@ -6,7 +6,7 @@
 
     <div class="profile-card">
         <div class="profile-header">
-            <div class="profile-avatar">{{slice .Profile.Name 0 1}}</div>
+            {{if .Profile.PhotoURL}}<img src="{{.Profile.PhotoURL}}" alt="" class="profile-avatar">{{else}}<div class="profile-avatar">{{slice .Profile.Name 0 1}}</div>{{end}}
             <div class="profile-info">
                 <h1 class="profile-name">{{.Profile.Name}}</h1>
                 {{if .Profile.Experience}}

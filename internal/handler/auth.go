@@ -34,8 +34,9 @@ func (h *Handler) handleTelegramAuth(w http.ResponseWriter, r *http.Request) {
 	if ln := query.Get("last_name"); ln != "" {
 		name += " " + ln
 	}
+	photoURL := query.Get("photo_url")
 
-	user, isNew, err := h.repo.UpsertUser(r.Context(), tgID, username, name)
+	user, isNew, err := h.repo.UpsertUser(r.Context(), tgID, username, name, photoURL)
 	if err != nil {
 		log.Printf("upsert user error: %v", err)
 		http.Error(w, "Internal error", 500)

@@ -36,7 +36,7 @@
 
             <div class="admin-sidebar-footer">
                 <div class="admin-user">
-                    <span class="user-avatar" style="width:28px;height:28px;font-size:0.7rem;">{{slice .User.Name 0 1}}</span>
+                    {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="user-avatar" style="width:28px;height:28px;">{{else}}<span class="user-avatar" style="width:28px;height:28px;font-size:0.7rem;">{{slice .User.Name 0 1}}</span>{{end}}
                     <span class="admin-user-name">{{.User.Name}}</span>
                 </div>
                 <form action="/auth/logout" method="POST" style="margin-top:8px;">

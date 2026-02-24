@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,6 +13,7 @@ import (
 	"svyaz/internal/config"
 	"svyaz/internal/handler"
 	"svyaz/internal/repo"
+	"svyaz/internal/telegram"
 )
 
 func main() {
@@ -32,13 +34,31 @@ func main() {
 	}
 	log.Printf("Bot: @%s", botUsername)
 
-	h := handler.New(db, "templates", cfg.BotToken, botUsername, cfg.CSRFSecret, cfg.CookieDomain)
+	tgClient := telegram.NewClient(cfg.BotToken)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	tgClient.StartPolling(ctx, func(tgUserID, chatID int64) {
+		user, err := db.GetUserByTgID(context.Background(), tgUserID)
+		if err != nil {
+			log.Printf("poll: user not found for tg_id=%d: %v", tgUserID, err)
+			return
+		}
+		if err := db.SetTgChatID(context.Background(), user.ID, chatID); err != nil {
+			log.Printf("poll: set tg_chat_id: %v", err)
+			return
+		}
+		log.Printf("poll: linked tg_chat_id=%d for user %d", chatID, user.ID)
+		tgClient.SendMessage(chatID, "Уведомления подключены! Теперь вы будете получать сообщения о новых откликах.")
+	})
+
+	h := handler.New(db, "templates", cfg.BotToken, botUsername, cfg.CSRFSecret, cfg.CookieDomain, tgClient)
 	router := h.Router()
 
 	go func() {
 		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 		<-sig
+		cancel()
 		log.Println("shutting down...")
 		os.Exit(0)
 	}()

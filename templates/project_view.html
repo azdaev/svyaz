@@ -41,7 +41,7 @@
             <i data-lucide="calendar" class="icon-sm"></i> {{formatDate .Project.CreatedAt}}
         </span>
         <a href="/user/{{.Project.Author.ID}}" class="meta-item meta-author">
-            <span class="author-avatar-sm">{{slice .Project.Author.Name 0 1}}</span>
+            {{if .Project.Author.PhotoURL}}<img src="{{.Project.Author.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .Project.Author.Name 0 1}}</span>{{end}}
             {{.Project.Author.Name}}
         </a>
         {{if .Project.Author.TgUsername}}
@@ -104,7 +104,7 @@
             {{range .Responses}}
             <div class="response-card response-{{.Status}}">
                 <a href="/user/{{.User.ID}}" class="response-user">
-                    <span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>
+                    {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>{{end}}
                     <div class="response-user-info">
                         <div class="response-name">{{.User.Name}}</div>
                         <div class="response-details">

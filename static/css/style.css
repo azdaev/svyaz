@@ -238,6 +238,11 @@ a:visited { color: inherit; }
     text-transform: uppercase;
 }
 
+img.user-avatar {
+    object-fit: cover;
+    background: none;
+}
+
 .user-dropdown { min-width: 200px; }
 
 .dropdown-header {
@@ -444,6 +449,11 @@ button.dropdown-item { justify-content: start; font-weight: normal; }
     font-weight: 600;
     text-transform: uppercase;
     flex-shrink: 0;
+}
+
+img.author-avatar, img.author-avatar-sm {
+    object-fit: cover;
+    background: none;
 }
 
 .author-name {
@@ -1055,6 +1065,11 @@ input[type="number"].role-count-input {
     flex-shrink: 0;
 }
 
+img.profile-avatar {
+    object-fit: cover;
+    background: none;
+}
+
 .profile-info { flex: 1; min-width: 0; }
 
 .profile-name {
@@ -1168,6 +1183,20 @@ input[type="number"].role-count-input {
 
 .onboarding-header .form-subtitle {
     margin-top: 4px;
+}
+
+.tg-notify-hint {
+    margin-top: 32px;
+    padding: 20px;
+    background: var(--blue-pale);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.tg-notify-hint p {
+    font-size: 0.85rem;
+    color: var(--gray-700);
+    margin-bottom: 12px;
 }
 
 /* ===== Empty state ===== */

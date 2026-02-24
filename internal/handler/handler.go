@@ -17,6 +17,7 @@ import (
 
 	"svyaz/internal/middleware"
 	"svyaz/internal/repo"
+	"svyaz/internal/telegram"
 )
 
 type Handler struct {
@@ -26,9 +27,10 @@ type Handler struct {
 	botUsername  string
 	csrfSecret   string
 	cookieDomain string
+	tgClient     *telegram.Client
 }
 
-func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain string) *Handler {
+func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain string, tgClient *telegram.Client) *Handler {
 	return &Handler{
 		repo:         r,
 		tmplDir:      tmplDir,
@@ -36,6 +38,7 @@ func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain 
 		botUsername:  botUsername,
 		csrfSecret:   csrfSecret,
 		cookieDomain: cookieDomain,
+		tgClient:     tgClient,
 	}
 }
 
