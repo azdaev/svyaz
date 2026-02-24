@@ -6,7 +6,7 @@ node_modules/
 bin/
 brief-*.html
 screenshots/
-server
+/server
 .playwright-mcp/
 package.json
 package-lock.json
