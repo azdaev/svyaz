@@ -1,5 +1,17 @@
 {{define "title"}} — {{.Project.Title}}{{end}}
 
+{{define "og_meta"}}
+<meta property="og:title" content="{{.Project.Title}} — Svyaz">
+<meta property="og:description" content="{{ogClean .Project.Description 200}}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://svyaz.fitra.tech/project/{{.Project.ID}}">
+<meta property="og:image" content="https://svyaz.fitra.tech/project/{{.Project.ID}}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Svyaz">
+<meta name="twitter:card" content="summary_large_image">
+{{end}}
+
 {{define "content"}}
 <div class="project-page">
     <a href="/" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Назад</a>
@@ -81,16 +93,38 @@
         {{if not .IsAuthor}}
         <div class="respond-section">
             {{if .HasResponded}}
-            <div class="responded-notice">
-                <i data-lucide="check-circle" class="icon"></i>
-                Вы уже откликнулись на этот проект
-            </div>
+                {{if eq .UserResponseStatus "pending"}}
+                <div class="responded-notice">
+                    <i data-lucide="check-circle" class="icon"></i>
+                    <div>
+                        <div>Вы откликнулись на этот проект</div>
+                        <div class="responded-hint">Если автор примет отклик, он свяжется с вами в Telegram</div>
+                    </div>
+                </div>
+                <form action="/api/projects/{{.Project.ID}}/cancel-response" method="POST" class="cancel-response-form">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <button type="submit" class="btn btn-secondary btn-sm">
+                        <i data-lucide="x" class="icon-sm"></i> Отменить отклик
+                    </button>
+                </form>
+                {{else if eq .UserResponseStatus "accepted"}}
+                <div class="responded-notice">
+                    <i data-lucide="check-circle" class="icon"></i>
+                    Ваш отклик принят! Автор свяжется с вами в Telegram
+                </div>
+                {{else}}
+                <div class="responded-notice responded-notice--rejected">
+                    <i data-lucide="x-circle" class="icon"></i>
+                    Ваш отклик отклонён
+                </div>
+                {{end}}
             {{else}}
             <form action="/api/projects/{{.Project.ID}}/respond" method="POST">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <button type="submit" class="btn btn-primary btn-lg">
                     <i data-lucide="send" class="icon-sm"></i> Откликнуться
                 </button>
+                <p class="respond-hint">Автор проекта свяжется с вами в Telegram, если примет отклик</p>
             </form>
             {{end}}
         </div>

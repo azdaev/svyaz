@@ -40,6 +40,32 @@ func (r *Repo) HasUserResponded(ctx context.Context, projectID, userID int64) (b
 	return err == nil, err
 }
 
+func (r *Repo) GetUserResponseForProject(ctx context.Context, projectID, userID int64) (*models.Response, error) {
+	resp := &models.Response{}
+	err := r.db.QueryRowContext(ctx,
+		`SELECT id, project_id, user_id, status, created_at FROM responses WHERE project_id = ? AND user_id = ?`,
+		projectID, userID,
+	).Scan(&resp.ID, &resp.ProjectID, &resp.UserID, &resp.Status, &resp.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *Repo) DeleteResponse(ctx context.Context, id, userID int64) error {
+	result, err := r.db.ExecContext(ctx,
+		`DELETE FROM responses WHERE id = ? AND user_id = ?`, id, userID,
+	)
+	if err != nil {
+		return fmt.Errorf("delete response: %w", err)
+	}
+	n, _ := result.RowsAffected()
+	if n == 0 {
+		return fmt.Errorf("response not found")
+	}
+	return nil
+}
+
 func (r *Repo) UpdateResponseStatus(ctx context.Context, id int64, status string) error {
 	_, err := r.db.ExecContext(ctx, `UPDATE responses SET status = ? WHERE id = ?`, status, id)
 	return err

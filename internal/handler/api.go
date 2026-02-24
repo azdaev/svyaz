@@ -147,6 +147,35 @@ func (h *Handler) handleRespond(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/project/%d", id), http.StatusFound)
 }
 
+func (h *Handler) handleCancelResponse(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	user := middleware.UserFromContext(r.Context())
+
+	resp, err := h.repo.GetUserResponseForProject(r.Context(), id, user.ID)
+	if err != nil {
+		http.Redirect(w, r, fmt.Sprintf("/project/%d", id), http.StatusFound)
+		return
+	}
+
+	if resp.Status != "pending" {
+		http.Redirect(w, r, fmt.Sprintf("/project/%d", id), http.StatusFound)
+		return
+	}
+
+	if err := h.repo.DeleteResponse(r.Context(), resp.ID, user.ID); err != nil {
+		log.Printf("cancel response: %v", err)
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/project/%d", id), http.StatusFound)
+}
+
 func (h *Handler) handleUpdateResponse(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

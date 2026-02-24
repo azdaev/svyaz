@@ -66,9 +66,14 @@ func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user != nil {
-		responded, _ := h.repo.HasUserResponded(r.Context(), id, user.ID)
-		data["HasResponded"] = responded
 		data["IsAuthor"] = user.ID == project.AuthorID
+
+		if user.ID != project.AuthorID {
+			if resp, err := h.repo.GetUserResponseForProject(r.Context(), id, user.ID); err == nil {
+				data["HasResponded"] = true
+				data["UserResponseStatus"] = resp.Status
+			}
+		}
 
 		if user.ID == project.AuthorID {
 			responses, _ := h.repo.ListProjectResponses(r.Context(), id)
