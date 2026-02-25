@@ -155,14 +155,10 @@
                 <a href="/user/{{.User.ID}}" class="response-user">
                     {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>{{end}}
                     <div class="response-user-info">
-                        <div class="response-name">
-                            {{.User.Name}}
-                            {{if .Role}}<span class="badge badge-{{.Role.Slug}} badge-sm response-role">{{.Role.Name}}</span>{{end}}
-                        </div>
+                        <div class="response-name">{{.User.Name}}</div>
                         <div class="response-details">
-                            {{range .User.Roles}}
-                            <span class="badge badge-{{.Slug}} badge-sm">{{.Name}}</span>
-                            {{end}}
+                            {{if .Role}}<span class="badge badge-{{.Role.Slug}} badge-sm response-role">→ {{.Role.Name}}</span>{{end}}
+                            {{$roleID := .Role}}{{range .User.Roles}}{{if or (not $roleID) (ne .ID $roleID.ID)}}<span class="badge badge-{{.Slug}} badge-sm">{{.Name}}</span>{{end}}{{end}}
                             {{if .User.Experience}}<span class="response-exp">{{.User.Experience}}</span>{{end}}
                         </div>
                     </div>
