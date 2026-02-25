@@ -55,7 +55,10 @@ func main() {
 		tgClient.SendMessage(chatID, "Уведомления подключены! Теперь вы будете получать сообщения о новых откликах.")
 	})
 
-	h := handler.New(db, "templates", cfg.BotToken, botUsername, cfg.CSRFSecret, cfg.CookieDomain, tgClient)
+	h := handler.New(db, "templates", cfg.BotToken, botUsername, cfg.CSRFSecret, cfg.CookieDomain, tgClient, cfg.DevLogin)
+	if cfg.DevLogin {
+		log.Println("Dev login enabled at /auth/dev")
+	}
 	router := h.Router()
 
 	go func() {

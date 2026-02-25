@@ -3,10 +3,11 @@ package models
 import "time"
 
 type Role struct {
-	ID    int64
-	Slug  string
-	Name  string
-	Count int
+	ID     int64
+	Slug   string
+	Name   string
+	Count  int
+	Filled int
 }
 
 type User struct {
@@ -54,9 +55,11 @@ type Response struct {
 	ID        int64
 	ProjectID int64
 	UserID    int64
+	RoleID    *int64
 	Status    string
 	User      *User
 	Project   *Project
+	Role      *Role
 	CreatedAt time.Time
 }
 

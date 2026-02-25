@@ -67,6 +67,12 @@ func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Load roles with filled counts
+	rolesWithFilled, err := h.repo.GetProjectRolesWithFilled(r.Context(), project.ID)
+	if err == nil {
+		project.Roles = rolesWithFilled
+	}
+
 	data := map[string]any{
 		"Project":     project,
 		"JustCreated": r.URL.Query().Get("created") == "1",

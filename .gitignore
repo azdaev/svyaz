@@ -8,6 +8,7 @@ brief-*.html
 screenshots/
 /server
 .playwright-mcp/
+.claude/
 package.json
 package-lock.json
 SPEC.md

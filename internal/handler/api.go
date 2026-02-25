@@ -110,7 +110,25 @@ func (h *Handler) handleRespond(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.repo.CreateResponse(r.Context(), project.ID, user.ID); err != nil {
+	_ = r.ParseForm()
+	var roleID *int64
+	if rid := r.FormValue("role_id"); rid != "" {
+		if id, err := strconv.ParseInt(rid, 10, 64); err == nil {
+			// Validate role belongs to this project
+			valid := false
+			for _, role := range project.Roles {
+				if role.ID == id {
+					valid = true
+					break
+				}
+			}
+			if valid {
+				roleID = &id
+			}
+		}
+	}
+
+	if err := h.repo.CreateResponse(r.Context(), project.ID, user.ID, roleID); err != nil {
 		log.Printf("create response: %v", err)
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return

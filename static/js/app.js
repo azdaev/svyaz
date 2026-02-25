@@ -112,3 +112,16 @@ function stepCount(btn, delta) {
     const next = val + delta;
     if (next >= 1) input.value = next;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const picker = document.getElementById('rolePicker');
+    if (!picker) return;
+
+    picker.querySelectorAll('.role-picker-item').forEach(label => {
+        label.addEventListener('click', () => {
+            if (label.classList.contains('role-picker-disabled')) return;
+            picker.querySelectorAll('.role-picker-item').forEach(l => l.classList.remove('active'));
+            label.classList.add('active');
+        });
+    });
+});

@@ -252,6 +252,33 @@ func (r *Repo) getProjectRoles(ctx context.Context, projectID int64) ([]models.R
 	return roles, nil
 }
 
+func (r *Repo) GetProjectRolesWithFilled(ctx context.Context, projectID int64) ([]models.Role, error) {
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT r.id, r.slug, r.name, pr.count,
+		        COALESCE((SELECT COUNT(*) FROM responses resp
+		                  WHERE resp.project_id = pr.project_id
+		                    AND resp.role_id = r.id
+		                    AND resp.status = 'accepted'), 0) AS filled
+		 FROM roles r
+		 JOIN project_roles pr ON pr.role_id = r.id
+		 WHERE pr.project_id = ?`, projectID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var roles []models.Role
+	for rows.Next() {
+		var role models.Role
+		if err := rows.Scan(&role.ID, &role.Slug, &role.Name, &role.Count, &role.Filled); err != nil {
+			return nil, err
+		}
+		roles = append(roles, role)
+	}
+	return roles, nil
+}
+
 func (r *Repo) CountProjectResponses(ctx context.Context, projectID int64) (int, error) {
 	var count int
 	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM responses WHERE project_id = ?`, projectID).Scan(&count)

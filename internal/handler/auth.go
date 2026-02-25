@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -12,8 +13,78 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+
 	"svyaz/internal/repo"
 )
+
+func (h *Handler) handleDevLogin(w http.ResponseWriter, r *http.Request) {
+	users, err := h.repo.ListUsers(r.Context())
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprint(w, `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Dev Login</title>
+<style>
+body{font-family:system-ui;max-width:480px;margin:40px auto;padding:0 20px;background:#f7f8fa}
+h1{font-size:1.2rem;color:#1a1a2e;margin-bottom:24px}
+a.user{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;text-decoration:none;color:#2d2d3f;transition:.15s}
+a.user:hover{border-color:#5b9bd5;box-shadow:0 2px 8px rgba(91,155,213,.15)}
+.avatar{width:36px;height:36px;border-radius:50%;background:#5b9bd5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+img.avatar{object-fit:cover}
+.name{font-weight:600;font-size:.9rem}
+.username{font-size:.8rem;color:#9ca3af}
+</style></head><body><h1>Dev Login</h1>`)
+
+	for _, u := range users {
+		avatar := fmt.Sprintf(`<span class="avatar">%s</span>`, string([]rune(u.Name)[:1]))
+		if u.PhotoURL != "" {
+			avatar = fmt.Sprintf(`<img class="avatar" src="%s">`, u.PhotoURL)
+		}
+		fmt.Fprintf(w, `<a class="user" href="/auth/dev/%d">%s<div><div class="name">%s</div><div class="username">@%s</div></div></a>`,
+			u.ID, avatar, u.Name, u.TgUsername)
+	}
+
+	fmt.Fprint(w, `</body></html>`)
+}
+
+func (h *Handler) handleDevLoginAs(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	user, err := h.repo.GetUser(r.Context(), id)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	token := repo.GenerateToken()
+	if err := h.repo.CreateSession(r.Context(), token, user.ID); err != nil {
+		log.Printf("dev login session: %v", err)
+		http.Error(w, "Internal error", 500)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   30 * 24 * 3600,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	if !user.Onboarded {
+		http.Redirect(w, r, "/onboarding", http.StatusFound)
+	} else {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+}
 
 func (h *Handler) handleTelegramAuth(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()

@@ -510,6 +510,93 @@ img.author-avatar, img.author-avatar-sm {
 .badge-android         { background: #DCFCE7; color: #166534; }
 .badge-flutter         { background: #E0F2FE; color: #075985; }
 
+/* Filled role badge */
+.badge-filled {
+    opacity: 0.5;
+}
+
+.badge-filled .icon-sm {
+    vertical-align: -2px;
+}
+
+.role-progress {
+    opacity: 0.7;
+    font-weight: 500;
+    margin-left: 2px;
+    font-size: 0.85em;
+}
+
+/* Role picker (response form) */
+.role-picker {
+    margin-bottom: 16px;
+}
+
+.role-picker-label {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-bottom: 8px;
+}
+
+.role-picker-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.role-picker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-300);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gray-500);
+    transition: all var(--transition);
+}
+
+.role-picker-item input[type="radio"] { display: none; }
+
+.role-picker-item:hover:not(.role-picker-disabled) {
+    border-color: var(--blue-light);
+    color: var(--gray-700);
+}
+
+.role-picker-item.active {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+.role-picker-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Role picker color variants */
+.role-picker-frontend.active        { background: #DBEAFE; border-color: #1D4ED8; color: #1D4ED8; }
+.role-picker-backend.active         { background: #D1FAE5; border-color: #065F46; color: #065F46; }
+.role-picker-fullstack.active       { background: #EDE9FE; border-color: #5B21B6; color: #5B21B6; }
+.role-picker-project-manager.active { background: #FEF3C7; border-color: #92400E; color: #92400E; }
+.role-picker-product-manager.active { background: #FEE2E2; border-color: #991B1B; color: #991B1B; }
+.role-picker-ux-ui-designer.active  { background: #FCE7F3; border-color: #9D174D; color: #9D174D; }
+.role-picker-analyst.active         { background: #CFFAFE; border-color: #155E75; color: #155E75; }
+.role-picker-logo-designer.active   { background: #FFEDD5; border-color: #9A3412; color: #9A3412; }
+.role-picker-qa.active              { background: #E0E7FF; border-color: #3730A3; color: #3730A3; }
+.role-picker-devops.active          { background: #CCFBF1; border-color: #115E59; color: #115E59; }
+.role-picker-ios.active             { background: #F3E8FF; border-color: #6B21A8; color: #6B21A8; }
+.role-picker-android.active         { background: #DCFCE7; border-color: #166534; color: #166534; }
+.role-picker-flutter.active         { background: #E0F2FE; border-color: #075985; color: #075985; }
+
+/* Response role badge */
+.response-role {
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
 /* Status badges */
 .status-badge {
     display: inline-block;

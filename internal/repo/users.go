@@ -122,6 +122,25 @@ func (r *Repo) SetTgChatID(ctx context.Context, userID, chatID int64) error {
 	return err
 }
 
+func (r *Repo) ListUsers(ctx context.Context) ([]models.User, error) {
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT id, name, tg_username, photo_url FROM users ORDER BY id`)
+	if err != nil {
+		return nil, fmt.Errorf("list users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var u models.User
+		if err := rows.Scan(&u.ID, &u.Name, &u.TgUsername, &u.PhotoURL); err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+	return users, nil
+}
+
 func (r *Repo) GetAllRoles(ctx context.Context) ([]models.Role, error) {
 	rows, err := r.db.QueryContext(ctx, `SELECT id, slug, name FROM roles ORDER BY id`)
 	if err != nil {

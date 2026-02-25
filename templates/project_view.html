@@ -23,7 +23,7 @@
     </div>
     {{end}}
 
-    {{if and .IsAuthor (ne .Project.Status "active")}}
+    {{if and .IsAuthor (ne .Project.Status "active") (not .JustCreated)}}
     <div class="moderation-notice moderation-notice--{{.Project.Status}}">
         <i data-lucide="{{if eq .Project.Status "pending"}}clock{{else}}eye-off{{end}}" class="icon"></i>
         {{if eq .Project.Status "pending"}}Проект на модерации{{end}}
@@ -83,7 +83,7 @@
         <h3 class="section-label"><i data-lucide="users" class="icon-sm"></i> Ищем в команду</h3>
         <div class="tag-list">
             {{range .Project.Roles}}
-            <span class="badge badge-{{.Slug}} badge-lg">{{.Name}}{{if gt .Count 1}} <span class="badge-count">x{{.Count}}</span>{{end}}</span>
+            <span class="badge badge-{{.Slug}} badge-lg{{if ge .Filled .Count}} badge-filled{{end}}">{{if ge .Filled .Count}}<i data-lucide="check" class="icon-sm"></i> {{end}}{{.Name}}{{if gt .Count 1}} <span class="role-progress">{{.Filled}}/{{.Count}}</span>{{else if and (eq .Count 1) (ge .Filled 1)}}{{else if and (gt .Filled 0) (eq .Count 1)}}{{end}}</span>
             {{end}}
         </div>
     </div>
@@ -121,6 +121,21 @@
             {{else}}
             <form action="/api/projects/{{.Project.Slug}}/respond" method="POST">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                {{if .Project.Roles}}
+                <div class="role-picker" id="rolePicker">
+                    <p class="role-picker-label">Выберите роль:</p>
+                    <div class="role-picker-list">
+                        {{range .Project.Roles}}
+                        <label class="role-picker-item role-picker-{{.Slug}}{{if ge .Filled .Count}} role-picker-disabled{{end}}"{{if ge .Filled .Count}} aria-disabled="true"{{end}}>
+                            <input type="radio" name="role_id" value="{{.ID}}"{{if ge .Filled .Count}} disabled{{end}}>
+                            <span class="role-picker-name">{{.Name}}</span>
+                            {{if gt .Count 1}}<span class="role-progress">{{.Filled}}/{{.Count}}</span>{{end}}
+                            {{if ge .Filled .Count}}<i data-lucide="check" class="icon-sm"></i>{{end}}
+                        </label>
+                        {{end}}
+                    </div>
+                </div>
+                {{end}}
                 <button type="submit" class="btn btn-primary btn-lg">
                     <i data-lucide="send" class="icon-sm"></i> Откликнуться
                 </button>
@@ -140,7 +155,10 @@
                 <a href="/user/{{.User.ID}}" class="response-user">
                     {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>{{end}}
                     <div class="response-user-info">
-                        <div class="response-name">{{.User.Name}}</div>
+                        <div class="response-name">
+                            {{.User.Name}}
+                            {{if .Role}}<span class="badge badge-{{.Role.Slug}} badge-sm response-role">{{.Role.Name}}</span>{{end}}
+                        </div>
                         <div class="response-details">
                             {{range .User.Roles}}
                             <span class="badge badge-{{.Slug}} badge-sm">{{.Name}}</span>

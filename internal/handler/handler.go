@@ -28,9 +28,10 @@ type Handler struct {
 	csrfSecret   string
 	cookieDomain string
 	tgClient     *telegram.Client
+	devLogin     bool
 }
 
-func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain string, tgClient *telegram.Client) *Handler {
+func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain string, tgClient *telegram.Client, devLogin bool) *Handler {
 	return &Handler{
 		repo:         r,
 		tmplDir:      tmplDir,
@@ -39,6 +40,7 @@ func New(r *repo.Repo, tmplDir, botToken, botUsername, csrfSecret, cookieDomain 
 		csrfSecret:   csrfSecret,
 		cookieDomain: cookieDomain,
 		tgClient:     tgClient,
+		devLogin:     devLogin,
 	}
 }
 
@@ -81,6 +83,10 @@ func (h *Handler) mainRouter() chi.Router {
 	// Auth
 	r.Get("/auth/telegram", h.handleTelegramAuth)
 	r.Post("/auth/logout", h.handleLogout)
+	if h.devLogin {
+		r.Get("/auth/dev", h.handleDevLogin)
+		r.Get("/auth/dev/{id}", h.handleDevLoginAs)
+	}
 
 	// API
 	r.Route("/api", func(r chi.Router) {
