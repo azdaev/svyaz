@@ -52,6 +52,11 @@
         <span class="meta-item">
             <i data-lucide="calendar" class="icon-sm"></i> {{formatDate .Project.CreatedAt}}
         </span>
+        {{if eq .Project.Type "commercial"}}
+        <span class="meta-item type-badge type-commercial">💰 Коммерческий</span>
+        {{else}}
+        <span class="meta-item type-badge type-non-commercial">🤝 Некоммерческий</span>
+        {{end}}
         <a href="/user/{{.Project.Author.ID}}" class="meta-item meta-author">
             {{if .Project.Author.PhotoURL}}<img src="{{.Project.Author.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .Project.Author.Name 0 1}}</span>{{end}}
             {{.Project.Author.Name}}
