@@ -35,12 +35,14 @@ type Project struct {
 	Title       string
 	Description string
 	Status      string
+	Type        string 
 	Stack       []string
 	Roles       []Role
 	Author      *User
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
+
 
 type AdminStats struct {
 	UserCount       int

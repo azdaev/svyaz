@@ -2,7 +2,9 @@
 
 {{define "content"}}
 <div class="filters">
-    <a href="/" class="filter-pill {{if not .FilterRole}}active{{end}}">Все</a>
+    <a href="/" class="filter-pill {{if and (not .FilterRole) (not .FilterType)}}active{{end}}">Все</a>
+    <a href="/?type=commercial" class="filter-pill {{if eq .FilterType "commercial"}}active{{end}}">💰 Коммерческий</a>
+    <a href="/?type=non-commercial" class="filter-pill {{if eq .FilterType "non-commercial"}}active{{end}}">🤝 Некоммерческий</a>
     {{range .Roles}}
     <a href="/?role={{.Slug}}" class="filter-pill {{if eq $.FilterRole .Slug}}active{{end}}">{{.Name}}</a>
     {{end}}
@@ -24,6 +26,14 @@
         <div class="card-header">
             <h3 class="card-title">{{.Title}}</h3>
             <span class="card-date">{{formatDate .CreatedAt}}</span>
+        </div>
+
+        <div class="card-type">
+            {{if eq .Type "commercial"}}
+            <span class="type-badge type-commercial">💰 Коммерческий</span>
+            {{else}}
+            <span class="type-badge type-non-commercial">🤝 Некоммерческий</span>
+            {{end}}
         </div>
 
         <p class="card-desc">{{truncate .Description 160}}</p>
@@ -56,7 +66,7 @@
 {{else}}
 <div class="empty-state">
     <i data-lucide="search" class="empty-icon"></i>
-    {{if or .FilterRole .FilterStack}}
+    {{if or .FilterRole .FilterStack .FilterType}}
     <p>Ничего не найдено</p>
     <a href="/" class="btn btn-secondary">Сбросить фильтры</a>
     {{else}}
