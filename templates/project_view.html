@@ -56,11 +56,9 @@
             {{if .Project.Author.PhotoURL}}<img src="{{.Project.Author.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .Project.Author.Name 0 1}}</span>{{end}}
             {{.Project.Author.Name}}
         </a>
-        {{if .Project.Author.TgUsername}}
-        <a href="https://t.me/{{.Project.Author.TgUsername}}" target="_blank" class="meta-item meta-tg">
-            <i data-lucide="at-sign" class="icon-sm"></i> {{.Project.Author.TgUsername}}
+        <a href="{{tgLink .Project.Author}}" target="_blank" class="meta-item meta-tg">
+            <i data-lucide="at-sign" class="icon-sm"></i> {{tgDisplay .Project.Author}}
         </a>
-        {{end}}
     </div>
 
     <div class="project-body">
@@ -164,11 +162,9 @@
                     </div>
                 </a>
                 <div class="response-right">
-                    {{if .User.TgUsername}}
-                    <a href="https://t.me/{{.User.TgUsername}}" target="_blank" class="tg-link">
-                        <i data-lucide="at-sign" class="icon-sm"></i> {{.User.TgUsername}}
+                    <a href="{{tgLink .User}}" target="_blank" class="tg-link">
+                        <i data-lucide="at-sign" class="icon-sm"></i> {{tgDisplay .User}}
                     </a>
-                    {{end}}
                     <div class="response-actions">
                         <span class="status-badge status-{{.Status}}">{{statusText .Status}}</span>
                         {{if eq .Status "pending"}}

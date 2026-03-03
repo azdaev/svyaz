@@ -16,6 +16,7 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 
 	"svyaz/internal/middleware"
+	"svyaz/internal/models"
 	"svyaz/internal/repo"
 	"svyaz/internal/telegram"
 )
@@ -241,6 +242,18 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, page string, da
 				end = len(runes)
 			}
 			return string(runes[start:end])
+		},
+		"tgLink": func(u *models.User) string {
+			if u.TgUsername != "" {
+				return "https://t.me/" + u.TgUsername
+			}
+			return fmt.Sprintf("tg://user?id=%d", u.TgID)
+		},
+		"tgDisplay": func(u *models.User) string {
+			if u.TgUsername != "" {
+				return "@" + u.TgUsername
+			}
+			return "Написать в Telegram"
 		},
 		"roleCount": func(m map[int64]int, id int64) int {
 			if c, ok := m[id]; ok {

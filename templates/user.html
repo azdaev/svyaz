@@ -12,11 +12,9 @@
                 {{if .Profile.Experience}}
                 <span class="profile-exp">{{.Profile.Experience}}</span>
                 {{end}}
-                {{if .Profile.TgUsername}}
-                <a href="https://t.me/{{.Profile.TgUsername}}" target="_blank" class="profile-tg">
-                    <i data-lucide="at-sign" class="icon-sm"></i> {{.Profile.TgUsername}}
+                <a href="{{tgLink .Profile}}" target="_blank" class="profile-tg">
+                    <i data-lucide="at-sign" class="icon-sm"></i> {{tgDisplay .Profile}}
                 </a>
-                {{end}}
             </div>
             {{if .User}}{{if eq .User.ID .Profile.ID}}
             <a href="/settings" class="btn btn-secondary btn-sm">
