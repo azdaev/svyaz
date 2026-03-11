@@ -28,10 +28,12 @@ func (h *Handler) projectBySlug(w http.ResponseWriter, r *http.Request) *models.
 func (h *Handler) handleIndex(w http.ResponseWriter, r *http.Request) {
 	roleSlug := r.URL.Query().Get("role")
 	stack := r.URL.Query().Get("stack")
+	typeFilter := r.URL.Query().Get("type")
 
 	projects, err := h.repo.ListProjects(r.Context(), repo.ProjectFilter{
 		RoleSlug: roleSlug,
 		Stack:    stack,
+		Type:     typeFilter,
 		Limit:    50,
 	})
 	if err != nil {
@@ -46,6 +48,7 @@ func (h *Handler) handleIndex(w http.ResponseWriter, r *http.Request) {
 		"Roles":       roles,
 		"FilterRole":  roleSlug,
 		"FilterStack": stack,
+		"FilterType":  typeFilter,
 	})
 }
 
@@ -57,7 +60,6 @@ func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
 
 	user := middleware.UserFromContext(r.Context())
 
-	// Non-active projects: only visible to author and admins
 	if project.Status != "active" {
 		isAuthor := user != nil && user.ID == project.AuthorID
 		isAdmin := user != nil && user.IsAdmin
@@ -67,7 +69,6 @@ func (h *Handler) handleProjectView(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Load roles with filled counts
 	rolesWithFilled, err := h.repo.GetProjectRolesWithFilled(r.Context(), project.ID)
 	if err == nil {
 		project.Roles = rolesWithFilled
@@ -125,11 +126,11 @@ func (h *Handler) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.render(w, r, "project_form.html", map[string]any{
-		"Roles":         roles,
-		"IsEdit":        true,
-		"Project":       project,
-		"ProjectRoles":  roleIDs,
-		"RoleCountMap":  roleCountMap,
+		"Roles":        roles,
+		"IsEdit":       true,
+		"Project":      project,
+		"ProjectRoles": roleIDs,
+		"RoleCountMap": roleCountMap,
 	})
 }
 

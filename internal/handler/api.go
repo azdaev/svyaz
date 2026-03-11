@@ -30,8 +30,12 @@ func (h *Handler) handleCreateProject(w http.ResponseWriter, r *http.Request) {
 
 	stack := parseTags(r.FormValue("stack"))
 	roleCounts := parseRoleCounts(r)
+	projectType := r.FormValue("type")
+	if projectType != "commercial" {
+		projectType = "non-commercial"
+	}
 
-	slug, err := h.repo.CreateProject(r.Context(), user.ID, title, description, stack, roleCounts)
+	slug, err := h.repo.CreateProject(r.Context(), user.ID, title, description, projectType, stack, roleCounts)
 	if err != nil {
 		log.Printf("create project: %v", err)
 		http.Error(w, "Internal error", http.StatusInternalServerError)
@@ -62,8 +66,12 @@ func (h *Handler) handleUpdateProject(w http.ResponseWriter, r *http.Request) {
 	description := strings.TrimSpace(r.FormValue("description"))
 	stack := parseTags(r.FormValue("stack"))
 	roleCounts := parseRoleCounts(r)
+	projectType := r.FormValue("type")
+	if projectType != "commercial" {
+		projectType = "non-commercial"
+	}
 
-	if err := h.repo.UpdateProject(r.Context(), project.ID, title, description, stack, roleCounts); err != nil {
+	if err := h.repo.UpdateProject(r.Context(), project.ID, title, description, projectType, stack, roleCounts); err != nil {
 		log.Printf("update project: %v", err)
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return
@@ -114,7 +122,6 @@ func (h *Handler) handleRespond(w http.ResponseWriter, r *http.Request) {
 	var roleID *int64
 	if rid := r.FormValue("role_id"); rid != "" {
 		if id, err := strconv.ParseInt(rid, 10, 64); err == nil {
-			// Validate role belongs to this project
 			valid := false
 			for _, role := range project.Roles {
 				if role.ID == id {

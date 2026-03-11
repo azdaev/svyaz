@@ -36,6 +36,22 @@
         </div>
 
         <div class="form-group">
+            <label class="form-label">Тип проекта</label>
+            <div class="type-toggle">
+                <label>
+                    <input type="radio" name="type" value="non-commercial"
+                        {{if .IsEdit}}{{if eq .Project.Type "non-commercial"}}checked{{end}}{{else}}checked{{end}}>
+                    Некоммерческий
+                </label>
+                <label>
+                    <input type="radio" name="type" value="commercial"
+                        {{if .IsEdit}}{{if eq .Project.Type "commercial"}}checked{{end}}{{end}}>
+                    Коммерческий
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="form-label">Ищем в команду</label>
             <div class="role-grid">
                 {{range .Roles}}

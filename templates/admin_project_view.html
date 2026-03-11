@@ -1,51 +1,73 @@
 {{define "title"}} — {{.Project.Title}}{{end}}
 
+{{define "og_meta"}}
+<meta property="og:title" content="{{.Project.Title}} — Svyaz">
+<meta property="og:description" content="{{ogClean .Project.Description 200}}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://svyaz.fitra.tech/project/{{.Project.Slug}}">
+<meta property="og:image" content="https://svyaz.fitra.tech/project/{{.Project.Slug}}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Svyaz">
+<meta name="twitter:card" content="summary_large_image">
+{{end}}
+
 {{define "content"}}
-<a href="/projects" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Назад к проектам</a>
+<div class="project-page">
+    <a href="/" class="back-link"><i data-lucide="arrow-left" class="icon-sm"></i> Назад</a>
 
-<div class="admin-project-header">
-    <div>
+    {{if .JustCreated}}
+    <div class="moderation-notice">
+        <i data-lucide="clock" class="icon"></i>
+        Проект отправлен на модерацию. Он появится в общей ленте после проверки.
+    </div>
+    {{end}}
+
+    {{if and .IsAuthor (ne .Project.Status "active") (not .JustCreated)}}
+    <div class="moderation-notice moderation-notice--{{.Project.Status}}">
+        <i data-lucide="{{if eq .Project.Status "pending"}}clock{{else}}eye-off{{end}}" class="icon"></i>
+        {{if eq .Project.Status "pending"}}Проект на модерации{{end}}
+        {{if eq .Project.Status "hidden"}}Проект скрыт модератором{{end}}
+    </div>
+    {{end}}
+
+    <div class="project-header">
         <h1 class="project-title">{{.Project.Title}}</h1>
-        <div class="admin-project-meta">
-            <span class="project-status-badge project-status-{{.Project.Status}}">
-                {{if eq .Project.Status "pending"}}На модерации{{end}}
-                {{if eq .Project.Status "active"}}Активен{{end}}
-                {{if eq .Project.Status "hidden"}}Скрыт{{end}}
-            </span>
-            <span class="admin-muted">{{formatDate .Project.CreatedAt}}</span>
-            {{if .Project.Author}}
-            <span class="admin-muted">от {{.Project.Author.Name}}</span>
-            {{end}}
+        {{if .IsAuthor}}
+        <div class="project-actions">
+            <a href="/project/{{.Project.Slug}}/edit" class="btn btn-secondary btn-sm">
+                <i data-lucide="edit" class="icon-sm"></i> Редактировать
+            </a>
+            <form action="/api/projects/{{.Project.Slug}}/delete" method="POST" onsubmit="return confirm('Удалить проект?')">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i data-lucide="trash" class="icon-sm"></i> Удалить
+                </button>
+            </form>
         </div>
+        {{end}}
     </div>
 
-    <div class="admin-project-actions">
-        {{if ne .Project.Status "active"}}
-        <form action="/api/projects/{{.Project.ID}}/approve" method="POST" class="inline-form">
-            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-            <button type="submit" class="btn btn-accept btn-sm">
-                <i data-lucide="check" class="icon-sm"></i> Одобрить
-            </button>
-        </form>
+    <div class="project-meta">
+        <span class="meta-item">
+            <i data-lucide="calendar" class="icon-sm"></i> {{formatDate .Project.CreatedAt}}
+        </span>
+        {{if eq .Project.Type "commercial"}}
+        <span class="meta-item type-badge type-commercial">💰 Коммерческий</span>
+        {{else}}
+        <span class="meta-item type-badge type-non-commercial">🤝 Некоммерческий</span>
         {{end}}
-        {{if ne .Project.Status "hidden"}}
-        <form action="/api/projects/{{.Project.ID}}/hide" method="POST" class="inline-form">
-            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-            <button type="submit" class="btn btn-secondary btn-sm">
-                <i data-lucide="eye-off" class="icon-sm"></i> Скрыть
-            </button>
-        </form>
+        <a href="/user/{{.Project.Author.ID}}" class="meta-item meta-author">
+            {{if .Project.Author.PhotoURL}}<img src="{{.Project.Author.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .Project.Author.Name 0 1}}</span>{{end}}
+            {{.Project.Author.Name}}
+        </a>
+        {{if .Project.Author.TgUsername}}
+        <a href="https://t.me/{{.Project.Author.TgUsername}}" target="_blank" class="meta-item meta-tg">
+            <i data-lucide="at-sign" class="icon-sm"></i> {{.Project.Author.TgUsername}}
+        </a>
         {{end}}
-        <form action="/api/projects/{{.Project.ID}}/delete" method="POST" class="inline-form" onsubmit="return confirm('Удалить проект?')">
-            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-            <button type="submit" class="btn btn-danger btn-sm">
-                <i data-lucide="trash" class="icon-sm"></i> Удалить
-            </button>
-        </form>
     </div>
-</div>
 
-<div class="admin-project-body">
     <div class="project-body">
         <p>{{.Project.Description}}</p>
     </div>
@@ -55,7 +77,7 @@
         <h3 class="section-label"><i data-lucide="code" class="icon-sm"></i> Стек</h3>
         <div class="tag-list">
             {{range .Project.Stack}}
-            <span class="tag tag-stack">{{.}}</span>
+            <a href="/?stack={{.}}" class="tag tag-stack">{{.}}</a>
             {{end}}
         </div>
     </div>
@@ -63,39 +85,119 @@
 
     {{if .Project.Roles}}
     <div class="project-section">
-        <h3 class="section-label"><i data-lucide="users" class="icon-sm"></i> Роли</h3>
+        <h3 class="section-label"><i data-lucide="users" class="icon-sm"></i> Ищем в команду</h3>
         <div class="tag-list">
             {{range .Project.Roles}}
-            <span class="badge badge-{{.Slug}} badge-lg">{{.Name}}{{if gt .Count 1}} <span class="badge-count">x{{.Count}}</span>{{end}}</span>
+            <span class="badge badge-{{.Slug}} badge-lg{{if ge .Filled .Count}} badge-filled{{end}}">{{if ge .Filled .Count}}<i data-lucide="check" class="icon-sm"></i> {{end}}{{.Name}}{{if gt .Count 1}} <span class="role-progress">{{.Filled}}/{{.Count}}</span>{{else if and (eq .Count 1) (ge .Filled 1)}}{{else if and (gt .Filled 0) (eq .Count 1)}}{{end}}</span>
+            {{end}}
+        </div>
+    </div>
+    {{end}}
+
+    {{if .User}}
+        {{if not .IsAuthor}}
+        <div class="respond-section">
+            {{if .HasResponded}}
+                {{if eq .UserResponseStatus "pending"}}
+                <div class="responded-notice">
+                    <i data-lucide="check-circle" class="icon"></i>
+                    <div>
+                        <div>Вы откликнулись на этот проект</div>
+                        <div class="responded-hint">Если автор примет отклик, он свяжется с вами в Telegram</div>
+                    </div>
+                </div>
+                <form action="/api/projects/{{.Project.Slug}}/cancel-response" method="POST" class="cancel-response-form">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <button type="submit" class="btn btn-secondary btn-sm">
+                        <i data-lucide="x" class="icon-sm"></i> Отменить отклик
+                    </button>
+                </form>
+                {{else if eq .UserResponseStatus "accepted"}}
+                <div class="responded-notice">
+                    <i data-lucide="check-circle" class="icon"></i>
+                    Ваш отклик принят! Автор свяжется с вами в Telegram
+                </div>
+                {{else}}
+                <div class="responded-notice responded-notice--rejected">
+                    <i data-lucide="x-circle" class="icon"></i>
+                    Ваш отклик отклонён
+                </div>
+                {{end}}
+            {{else}}
+            <form action="/api/projects/{{.Project.Slug}}/respond" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                {{if .Project.Roles}}
+                <div class="role-picker" id="rolePicker">
+                    <p class="role-picker-label">Выберите роль:</p>
+                    <div class="role-picker-list">
+                        {{range .Project.Roles}}
+                        <label class="role-picker-item role-picker-{{.Slug}}{{if ge .Filled .Count}} role-picker-disabled{{end}}"{{if ge .Filled .Count}} aria-disabled="true"{{end}}>
+                            <input type="radio" name="role_id" value="{{.ID}}"{{if ge .Filled .Count}} disabled{{end}}>
+                            <span class="role-picker-name">{{.Name}}</span>
+                            {{if gt .Count 1}}<span class="role-progress">{{.Filled}}/{{.Count}}</span>{{end}}
+                            {{if ge .Filled .Count}}<i data-lucide="check" class="icon-sm"></i>{{end}}
+                        </label>
+                        {{end}}
+                    </div>
+                </div>
+                {{end}}
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i data-lucide="send" class="icon-sm"></i> Откликнуться
+                </button>
+                <p class="respond-hint">Автор проекта свяжется с вами в Telegram, если примет отклик</p>
+            </form>
+            {{end}}
+        </div>
+        {{end}}
+    {{end}}
+
+    {{if .Responses}}
+    <div class="responses-section">
+        <h3 class="section-label"><i data-lucide="inbox" class="icon-sm"></i> Отклики ({{len .Responses}})</h3>
+        <div class="responses-list">
+            {{range .Responses}}
+            <div class="response-card response-{{.Status}}">
+                <a href="/user/{{.User.ID}}" class="response-user">
+                    {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>{{end}}
+                    <div class="response-user-info">
+                        <div class="response-name">{{.User.Name}}</div>
+                        <div class="response-details">
+                            {{if .Role}}<span class="badge badge-{{.Role.Slug}} badge-sm response-role">→ {{.Role.Name}}</span>{{end}}
+                            {{$roleID := .Role}}{{range .User.Roles}}{{if or (not $roleID) (ne .ID $roleID.ID)}}<span class="badge badge-{{.Slug}} badge-sm">{{.Name}}</span>{{end}}{{end}}
+                            {{if .User.Experience}}<span class="response-exp">{{.User.Experience}}</span>{{end}}
+                        </div>
+                    </div>
+                </a>
+                <div class="response-right">
+                    {{if .User.TgUsername}}
+                    <a href="https://t.me/{{.User.TgUsername}}" target="_blank" class="tg-link">
+                        <i data-lucide="at-sign" class="icon-sm"></i> {{.User.TgUsername}}
+                    </a>
+                    {{end}}
+                    <div class="response-actions">
+                        <span class="status-badge status-{{.Status}}">{{statusText .Status}}</span>
+                        {{if eq .Status "pending"}}
+                        <form action="/api/responses/{{.ID}}" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <input type="hidden" name="status" value="accepted">
+                            <button type="submit" class="btn btn-accept btn-sm">
+                                <i data-lucide="check" class="icon-sm"></i> Принять
+                            </button>
+                        </form>
+                        <form action="/api/responses/{{.ID}}" method="POST" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                            <input type="hidden" name="status" value="rejected">
+                            <button type="submit" class="btn btn-reject btn-sm">
+                                <i data-lucide="x" class="icon-sm"></i> Отклонить
+                            </button>
+                        </form>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
             {{end}}
         </div>
     </div>
     {{end}}
 </div>
-
-{{if .Responses}}
-<div class="responses-section">
-    <h3 class="section-label"><i data-lucide="inbox" class="icon-sm"></i> Отклики ({{len .Responses}})</h3>
-    <div class="responses-list">
-        {{range .Responses}}
-        <div class="response-card">
-            <div class="response-user">
-                {{if .User.PhotoURL}}<img src="{{.User.PhotoURL}}" alt="" class="author-avatar-sm">{{else}}<span class="author-avatar-sm">{{slice .User.Name 0 1}}</span>{{end}}
-                <div class="response-user-info">
-                    <div class="response-name">{{.User.Name}}</div>
-                    {{if .User.TgUsername}}
-                    <span class="admin-tg">@{{.User.TgUsername}}</span>
-                    {{end}}
-                </div>
-            </div>
-            <span class="status-badge status-{{.Status}}">
-                {{if eq .Status "pending"}}На рассмотрении{{end}}
-                {{if eq .Status "accepted"}}Принят{{end}}
-                {{if eq .Status "rejected"}}Отклонён{{end}}
-            </span>
-        </div>
-        {{end}}
-    </div>
-</div>
-{{end}}
 {{end}}
