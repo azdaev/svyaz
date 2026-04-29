@@ -77,6 +77,8 @@ func (h *Handler) mainRouter() chi.Router {
 	r.Get("/project/{slug}/edit", h.requireAuth(h.handleProjectEdit))
 	r.Get("/user/{id}", h.handleUserProfile)
 	r.Get("/onboarding", h.requireAuth(h.handleOnboarding))
+	r.Get("/privacy", h.handlePrivacy)
+	r.Get("/consent", h.handleConsent)
 	r.Get("/settings", h.requireAuth(h.handleSettings))
 	r.Get("/my/projects", h.requireAuth(h.handleMyProjects))
 	r.Get("/my/responses", h.requireAuth(h.handleMyResponses))

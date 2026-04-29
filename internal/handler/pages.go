@@ -164,6 +164,14 @@ func (h *Handler) handleOnboarding(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *Handler) handlePrivacy(w http.ResponseWriter, r *http.Request) {
+	h.render(w, r, "privacy.html", nil)
+}
+
+func (h *Handler) handleConsent(w http.ResponseWriter, r *http.Request) {
+	h.render(w, r, "consent.html", nil)
+}
+
 func (h *Handler) handleSettings(w http.ResponseWriter, r *http.Request) {
 	roles, _ := h.repo.GetAllRoles(r.Context())
 	user := middleware.UserFromContext(r.Context())
