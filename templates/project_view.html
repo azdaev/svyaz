@@ -35,6 +35,16 @@
         <h1 class="project-title">{{.Project.Title}}</h1>
         {{if .IsAuthor}}
         <div class="project-actions">
+            <form action="/api/projects/{{.Project.Slug}}/close" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <button type="submit" class="btn btn-secondary btn-sm">
+                    {{if .Project.IsClosed}}
+                    <i data-lucide="circle-play" class="icon-sm"></i> Открыть набор
+                    {{else}}
+                    <i data-lucide="circle-stop" class="icon-sm"></i> Закрыть набор
+                    {{end}}
+                </button>
+            </form>
             <a href="/project/{{.Project.Slug}}/edit" class="btn btn-secondary btn-sm">
                 <i data-lucide="edit" class="icon-sm"></i> Редактировать
             </a>
@@ -87,6 +97,13 @@
     </div>
     {{end}}
 
+    {{if .Project.IsClosed}}
+    <div class="moderation-notice moderation-notice--closed">
+        <i data-lucide="circle-stop" class="icon"></i>
+        Набор в команду закрыт
+    </div>
+    {{end}}
+
     {{if .User}}
         {{if not .IsAuthor}}
         <div class="respond-section">
@@ -116,7 +133,7 @@
                     Ваш отклик отклонён
                 </div>
                 {{end}}
-            {{else}}
+            {{else if not .Project.IsClosed}}
             <form action="/api/projects/{{.Project.Slug}}/respond" method="POST">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 {{if .Project.Roles}}

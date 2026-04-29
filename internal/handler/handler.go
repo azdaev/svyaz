@@ -96,6 +96,7 @@ func (h *Handler) mainRouter() chi.Router {
 		r.Post("/projects", h.requireAuth(h.handleCreateProject))
 		r.Post("/projects/{slug}", h.requireAuth(h.handleUpdateProject))
 		r.Post("/projects/{slug}/delete", h.requireAuth(h.handleDeleteProject))
+		r.Post("/projects/{slug}/close", h.requireAuth(h.handleCloseProject))
 		r.Post("/projects/{slug}/respond", h.requireAuth(h.handleRespond))
 		r.Post("/projects/{slug}/cancel-response", h.requireAuth(h.handleCancelResponse))
 		r.Post("/responses/{id}", h.requireAuth(h.handleUpdateResponse))

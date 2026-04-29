@@ -22,6 +22,9 @@
                         {{if eq .Project.Status "hidden"}}Скрыт{{end}}
                     </span>
                     {{end}}
+                    {{if .Project.IsClosed}}
+                    <span class="project-status-badge project-status-closed">Набор закрыт</span>
+                    {{end}}
                 </div>
                 <span class="card-date">{{formatDate .Project.CreatedAt}}</span>
             </div>

@@ -72,6 +72,27 @@ func (h *Handler) handleUpdateProject(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/project/%s", project.Slug), http.StatusFound)
 }
 
+func (h *Handler) handleCloseProject(w http.ResponseWriter, r *http.Request) {
+	project := h.projectBySlug(w, r)
+	if project == nil {
+		return
+	}
+
+	user := middleware.UserFromContext(r.Context())
+	if user.ID != project.AuthorID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	if err := h.repo.SetProjectClosed(r.Context(), project.ID, !project.IsClosed); err != nil {
+		log.Printf("close project: %v", err)
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/project/%s", project.Slug), http.StatusFound)
+}
+
 func (h *Handler) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	project := h.projectBySlug(w, r)
 	if project == nil {
@@ -102,6 +123,11 @@ func (h *Handler) handleRespond(w http.ResponseWriter, r *http.Request) {
 	user := middleware.UserFromContext(r.Context())
 	if user.ID == project.AuthorID {
 		http.Error(w, "Нельзя откликнуться на свой проект", http.StatusBadRequest)
+		return
+	}
+
+	if project.IsClosed {
+		http.Error(w, "Набор закрыт", http.StatusForbidden)
 		return
 	}
 

@@ -20,10 +20,15 @@
 {{if .Projects}}
 <div class="projects-grid">
     {{range .Projects}}
-    <a href="/project/{{.Slug}}" class="project-card">
+    {{$p := .}}
+    <a href="/project/{{.Slug}}" class="project-card{{if .IsClosed}} project-card--closed{{end}}">
         <div class="card-header">
             <h3 class="card-title">{{.Title}}</h3>
+            {{if .IsClosed}}
+            <span class="badge-closed">Набор закрыт</span>
+            {{else}}
             <span class="card-date">{{formatDate .CreatedAt}}</span>
+            {{end}}
         </div>
 
         <p class="card-desc">{{truncate .Description 160}}</p>
@@ -41,7 +46,7 @@
         <div class="card-roles">
             <i data-lucide="users" class="icon-sm"></i>
             {{range .Roles}}
-            <span class="badge badge-{{.Slug}}">{{.Name}}{{if gt .Count 1}} <span class="badge-count">x{{.Count}}</span>{{end}}</span>
+            <span class="badge{{if not $p.IsClosed}} badge-{{.Slug}}{{end}}{{if $p.IsClosed}} badge-role--closed{{end}}">{{.Name}}{{if gt .Count 1}} <span class="badge-count">x{{.Count}}</span>{{end}}</span>
             {{end}}
         </div>
         {{end}}

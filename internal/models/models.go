@@ -35,6 +35,7 @@ type Project struct {
 	Title       string
 	Description string
 	Status      string
+	IsClosed    bool
 	Stack       []string
 	Roles       []Role
 	Author      *User

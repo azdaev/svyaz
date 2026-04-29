@@ -386,6 +386,34 @@ button.dropdown-item { justify-content: start; font-weight: normal; }
     transform: translateY(-2px);
 }
 
+.project-card--closed {
+    background: #FAFAFA;
+    border-color: var(--gray-200);
+}
+
+.project-card--closed:hover {
+    border-color: var(--gray-300);
+    box-shadow: none;
+    transform: none;
+}
+
+.badge-closed {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--gray-200);
+    color: var(--gray-500);
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.badge-role--closed {
+    background: var(--gray-100) !important;
+    color: var(--gray-400) !important;
+}
+
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -1430,6 +1458,7 @@ img.profile-avatar {
 .project-status-pending { background: var(--amber-pale); color: #92400E; }
 .project-status-active  { background: var(--green-pale); color: #065F46; }
 .project-status-hidden  { background: var(--gray-100); color: var(--gray-500); }
+.project-status-closed  { background: var(--gray-100); color: var(--gray-500); }
 
 .moderation-notice {
     display: flex;
@@ -1445,6 +1474,11 @@ img.profile-avatar {
 }
 
 .moderation-notice--hidden {
+    background: var(--gray-100);
+    color: var(--gray-500);
+}
+
+.moderation-notice--closed {
     background: var(--gray-100);
     color: var(--gray-500);
 }
